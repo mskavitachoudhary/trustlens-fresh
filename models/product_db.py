@@ -26,7 +26,7 @@ because it is a chemical.
 
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 
 # --------------------------------------------------------------------------- #
@@ -50,9 +50,9 @@ class Category(db.Model):
     description = db.Column(db.Text, nullable=True)
     parent_category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True)
     sort_order = db.Column(db.Integer, nullable=False, default=0)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    updated_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                           onupdate=utc_now)
 
     parent = db.relationship("Category", remote_side=[category_id], backref="children")
 
@@ -98,9 +98,9 @@ class Ingredient(db.Model):
     source = db.Column(db.String(300), nullable=True)
     source_url = db.Column(db.String(500), nullable=True)
     source_date = db.Column(db.String(50), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    updated_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                           onupdate=utc_now)
 
     # ---- helpers ----------------------------------------------------------- #
 
@@ -154,9 +154,9 @@ class Product(db.Model):
     source = db.Column(db.String(300), nullable=True)
     source_url = db.Column(db.String(500), nullable=True)
     source_date = db.Column(db.String(50), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    updated_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                           onupdate=utc_now)
     # NEW fields
     category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True, index=True)
     subcategory_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True, index=True)
@@ -287,11 +287,11 @@ class ProductIdentifier(db.Model):
     identifier_value = db.Column(db.String(100), nullable=False)
     source = db.Column(db.String(300), nullable=True)
     verification_status = db.Column(db.String(30), default="unverified")
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    updated_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                           onupdate=utc_now)
 
-    product = db.relationship("Product", backref="identifiers")
+    product = db.relationship("Product", backref=db.backref("identifiers", cascade="all, delete-orphan"))
 
     __table_args__ = (
         db.UniqueConstraint("product_id", "identifier_type", "identifier_value",
@@ -320,9 +320,9 @@ class ProductImage(db.Model):
     image_reference = db.Column(db.String(500), nullable=True)     # file path or URL
     ocr_text = db.Column(db.Text, nullable=True)
     ocr_confidence = db.Column(db.Float, nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
-    product = db.relationship("Product", backref="images")
+    product = db.relationship("Product", backref=db.backref("images", cascade="all, delete-orphan"))
 
     def __repr__(self):
         return f"<ProductImage {self.image_type} for {self.product_id}>"
@@ -346,11 +346,11 @@ class ProductAttribute(db.Model):
     attribute_type = db.Column(db.String(30), nullable=True)       # text|number|boolean|json
     source = db.Column(db.String(300), nullable=True)
     verification_status = db.Column(db.String(30), default="unverified")
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    updated_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                           onupdate=utc_now)
 
-    product = db.relationship("Product", backref="attributes")
+    product = db.relationship("Product", backref=db.backref("attributes", cascade="all, delete-orphan"))
 
     __table_args__ = (
         db.UniqueConstraint("product_id", "attribute_name", name="uq_product_attribute"),
@@ -381,7 +381,7 @@ class ProductVerification(db.Model):
     explanation = db.Column(db.Text, nullable=True)
     verified_at = db.Column(db.DateTime, nullable=True)
 
-    product = db.relationship("Product", backref="verifications")
+    product = db.relationship("Product", backref=db.backref("verifications", cascade="all, delete-orphan"))
 
     __table_args__ = (
         db.UniqueConstraint("product_id", "verification_type",
@@ -411,9 +411,9 @@ class ProductScoreFactor(db.Model):
     score_impact = db.Column(db.Float, nullable=True)              # numeric impact on score
     risk_level = db.Column(db.String(20), nullable=True)
     explanation = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
-    product = db.relationship("Product", backref="score_factors")
+    product = db.relationship("Product", backref=db.backref("score_factors", cascade="all, delete-orphan"))
 
     def __repr__(self):
         return f"<ProductScoreFactor {self.factor_name}={self.score_impact}>"

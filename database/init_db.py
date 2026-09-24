@@ -43,25 +43,27 @@ def _ensure_database(app) -> None:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         return
 
-    if uri.startswith("mysql") and "pymysql" in uri:
+    if uri.startswith("mysql"):
         try:
             import pymysql
+            from sqlalchemy.engine import make_url
 
-            host_part = uri.split("@")[1].split("/")[0]
-            user = uri.split("//")[1].split(":")[0]
-            password = uri.split("//")[1].split(":")[1].split("@")[0]
-            host = host_part.split(":")[0]
-            port = int(host_part.split(":")[1]) if ":" in host_part else 3306
-            db_name = uri.split("/")[-1].split("?")[0]
+            parsed_url = make_url(uri)
+            host = parsed_url.host or "localhost"
+            port = parsed_url.port or 3306
+            user = parsed_url.username or "root"
+            password = parsed_url.password or ""
+            db_name = parsed_url.database
 
-            connection = pymysql.connect(host=host, user=user, password=password, port=port)
-            cursor = connection.cursor()
-            cursor.execute(
-                f"CREATE DATABASE IF NOT EXISTS `{db_name}` "
-                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-            )
-            cursor.close()
-            connection.close()
+            if db_name:
+                connection = pymysql.connect(host=host, user=user, password=password, port=port)
+                cursor = connection.cursor()
+                cursor.execute(
+                    f"CREATE DATABASE IF NOT EXISTS `{db_name}` "
+                    "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+                )
+                cursor.close()
+                connection.close()
         except Exception as exc:  # noqa: BLE001
             app.logger.warning("Could not auto-create MySQL database: %s", exc)
 
@@ -72,8 +74,7 @@ def _verify_schema(app) -> None:
 
     - Additive drift (model has columns the live table lacks) is repaired with
       ``ALTER TABLE ... ADD COLUMN`` so existing rows are preserved.
-    - Destructive drift (columns removed or retyped) drops only the drifted
-      table and lets ``db.create_all()`` rebuild it.
+    - Destructive drift logs a warning so production data is never dropped.
     """
     try:
         inspector = inspect(db.engine)
@@ -91,8 +92,11 @@ def _verify_schema(app) -> None:
 
             if added and not removed:
                 _add_missing_columns(app, table, added)
-            else:
-                _drop_table(app, table.name)
+            elif removed:
+                app.logger.warning(
+                    "Table '%s' contains extra/drifted columns (%s). Skipping auto-drop to prevent data loss.",
+                    table.name, removed
+                )
     except Exception as exc:  # noqa: BLE001
         app.logger.warning("Schema verification skipped: %s", exc)
 
