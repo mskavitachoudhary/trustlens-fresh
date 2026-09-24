@@ -120,21 +120,21 @@
 - Modify: `templates/index.html`
 - Modify: `static/css/style.css`
 
-- [ ] **Step 1: Modernize Hero & Stats in `templates/index.html`**
+- [x] **Step 1: Modernize Hero & Stats in `templates/index.html`**
   - Replace hero badge emoji with SVG shield.
   - Update stats to highlight "8 AI Scanners", "100% Transparent Scoring", and "Free to Verify".
   - Clean up preview card on the hero right side with SVG icons instead of colored bullets.
 
-- [ ] **Step 2: Expand Scanner Grid to All 8 Tools in `templates/index.html`**
+- [x] **Step 2: Expand Scanner Grid to All 8 Tools in `templates/index.html`**
   - Update tools array to include Product Scanner and Claim Checker alongside the other 6 tools.
   - Replace tool icon emojis with corresponding vector SVG icons.
   - Refine `.tool-icon` and card hover styling in `style.css`.
 
-- [ ] **Step 3: Modernize "Why TrustLens" & CTA Sections**
+- [x] **Step 3: Modernize "Why TrustLens" & CTA Sections**
   - Replace checkmark emojis with crisp SVG checks.
   - Update cards and buttons with consistent theme variables.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
   - Commit as: `modernize homepage and showcase all 8 scanners`
 
 ---
