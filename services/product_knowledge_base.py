@@ -16,6 +16,8 @@ while different products get different scores based on their actual
 ingredient profiles.
 """
 
+from __future__ import annotations
+
 import hashlib
 import re
 

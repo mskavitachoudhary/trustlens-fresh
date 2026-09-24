@@ -33,6 +33,7 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 280}
 
     # ---- Session / Security ----
+    WTF_CSRF_ENABLED = os.environ.get("WTF_CSRF_ENABLED", "true").lower() in {"1", "true", "yes"}
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
     REMEMBER_COOKIE_DURATION = timedelta(days=14)

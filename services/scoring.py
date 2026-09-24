@@ -7,6 +7,8 @@ a low score means DANGEROUS. Reasons carry a severity so the UI can colour them.
 severity values: "success" (safe), "warning" (caution), "danger" (risk), "info" (neutral note).
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import List, Dict
 

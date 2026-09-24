@@ -7,6 +7,8 @@ No scan ever freezes the request: heavy work (OCR) runs under a timeout and
 every network call is capped.
 """
 
+from __future__ import annotations
+
 import os
 import re
 import uuid

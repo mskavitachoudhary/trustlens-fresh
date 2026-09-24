@@ -8,6 +8,7 @@ env/
 
 # Environment / secrets
 .env
+instance/
 instance/*.sqlite
 instance/*.db
 

@@ -2,6 +2,7 @@
 Flask>=3.0.0
 Flask-SQLAlchemy>=3.1.1
 Flask-Login>=0.6.3
+Flask-WTF>=1.2.1
 Werkzeug>=3.0.0
 
 # ---- Database ----
@@ -19,7 +20,7 @@ numpy>=1.26.0
 
 # ---- QR decoding ----
 pyzbar>=0.1.9
-zxing-cpp>=2.2.0
+zxing-cpp==2.1.0
 qrcode>=7.4.2
 
 # ---- Networking / validation ----

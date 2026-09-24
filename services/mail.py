@@ -11,6 +11,8 @@ Configure via environment variables:
     MAIL_ALERT_RECIPIENT (where scam reports + contact messages are delivered)
 """
 
+from __future__ import annotations
+
 import logging
 
 from flask import current_app
