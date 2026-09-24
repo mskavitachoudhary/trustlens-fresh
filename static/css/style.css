@@ -5,28 +5,110 @@
 
 /* ---- Design tokens ------------------------------------------------------ */
 :root {
-  --bg-deep: #05060f;
-  --bg-darker: #030409;
-  --panel: rgba(255, 255, 255, 0.055);
-  --panel-strong: rgba(255, 255, 255, 0.09);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-soft: rgba(255, 255, 255, 0.07);
-  --text-main: #eef1ff;
-  --text-muted: #9aa3c7;
-  --text-dim: #6b74a0;
-  --accent: #7c5cff;
-  --accent-2: #38d6ff;
-  --accent-3: #ffd66b;
-  --green: #2dd4a7;
-  --yellow: #f5b544;
-  --red: #ff5f6d;
-  --grad-main: linear-gradient(135deg, #7c5cff 0%, #38d6ff 100%);
-  --grad-danger: linear-gradient(135deg, #ff5f6d 0%, #ff8e53 100%);
-  --grad-safe: linear-gradient(135deg, #2dd4a7 0%, #38d6ff 100%);
+  color-scheme: light dark;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --radius: 18px;
   --radius-sm: 12px;
-  --shadow: 0 18px 50px rgba(2, 3, 12, 0.55);
-  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Theme tokens - Dark (default / fallback) */
+  --bg-canvas: #090d16;
+  --bg-surface: #111726;
+  --bg-surface-elevated: #182032;
+  --bg-input: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.10);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --accent-primary: #6366f1;
+  --accent-focus: rgba(99, 102, 241, 0.35);
+
+  /* Semantic status colors */
+  --trust-safe: #10b981;
+  --trust-safe-bg: rgba(16, 185, 129, 0.12);
+  --trust-warning: #f59e0b;
+  --trust-warning-bg: rgba(245, 158, 11, 0.12);
+  --trust-danger: #ef4444;
+  --trust-danger-bg: rgba(239, 68, 68, 0.12);
+
+  /* Depth & Navigation */
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --shadow-nav: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --bg-nav: rgba(9, 13, 22, 0.78);
+  --bg-nav-scrolled: rgba(9, 13, 22, 0.95);
+
+  /* Legacy token mapping for backward compatibility */
+  --bg-deep: var(--bg-canvas);
+  --bg-darker: var(--bg-canvas);
+  --panel: var(--bg-surface);
+  --panel-strong: var(--bg-surface-elevated);
+  --border: var(--border-color);
+  --border-soft: var(--border-subtle);
+  --text-main: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --text-dim: var(--text-tertiary);
+  --accent: var(--accent-primary);
+  --accent-2: #38d6ff;
+  --accent-3: #ffd66b;
+  --green: var(--trust-safe);
+  --yellow: var(--trust-warning);
+  --red: var(--trust-danger);
+  --grad-main: linear-gradient(135deg, var(--accent-primary) 0%, #38d6ff 100%);
+  --grad-danger: linear-gradient(135deg, var(--trust-danger) 0%, #ff8e53 100%);
+  --grad-safe: linear-gradient(135deg, var(--trust-safe) 0%, #38d6ff 100%);
+  --shadow: var(--shadow-card);
+}
+
+[data-theme="dark"] {
+  --bg-canvas: #090d16;
+  --bg-surface: #111726;
+  --bg-surface-elevated: #182032;
+  --bg-input: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.10);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --accent-primary: #6366f1;
+  --accent-focus: rgba(99, 102, 241, 0.35);
+
+  --trust-safe: #10b981;
+  --trust-safe-bg: rgba(16, 185, 129, 0.12);
+  --trust-warning: #f59e0b;
+  --trust-warning-bg: rgba(245, 158, 11, 0.12);
+  --trust-danger: #ef4444;
+  --trust-danger-bg: rgba(239, 68, 68, 0.12);
+
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --shadow-nav: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --bg-nav: rgba(9, 13, 22, 0.78);
+  --bg-nav-scrolled: rgba(9, 13, 22, 0.95);
+}
+
+[data-theme="light"] {
+  --bg-canvas: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --bg-input: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.09);
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --accent-primary: #4f46e5;
+  --accent-focus: rgba(79, 70, 229, 0.25);
+
+  --trust-safe: #059669;
+  --trust-safe-bg: rgba(5, 150, 105, 0.10);
+  --trust-warning: #d97706;
+  --trust-warning-bg: rgba(217, 119, 6, 0.10);
+  --trust-danger: #dc2626;
+  --trust-danger-bg: rgba(220, 38, 38, 0.10);
+
+  --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+  --shadow-nav: 0 1px 3px 0 rgba(15, 23, 42, 0.08);
+  --bg-nav: rgba(248, 250, 252, 0.85);
+  --bg-nav-scrolled: rgba(248, 250, 252, 0.98);
 }
 
 /* ---- Base --------------------------------------------------------------- */
@@ -44,23 +126,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Animated aurora background */
-.bg-aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(900px 600px at 12% -5%, rgba(124, 92, 255, 0.22), transparent 60%),
-    radial-gradient(800px 500px at 95% 8%, rgba(56, 214, 255, 0.16), transparent 55%),
-    radial-gradient(700px 700px at 50% 110%, rgba(124, 92, 255, 0.13), transparent 60%),
-    var(--bg-deep);
-}
-
-#particles-js {
+/* ---- Subtle technical grid background ------------------------------------ */
+.bg-subtle-grid {
   position: fixed;
   inset: 0;
   z-index: -1;
-  opacity: 0.5;
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse at 50% 0%, black 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, black 75%, transparent 100%);
   pointer-events: none;
 }
 
@@ -122,7 +197,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ---- Navbar ------------------------------------------------------------- */
 .navbar-trust {
-  background: rgba(5, 6, 15, 0.72);
+  background: var(--bg-nav);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-soft);
@@ -131,8 +206,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar-trust.scrolled {
-  background: rgba(5, 6, 15, 0.92);
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45);
+  background: var(--bg-nav-scrolled);
+  box-shadow: var(--shadow-nav);
 }
 
 .brand-mark {
@@ -162,12 +237,12 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-trust .nav-link:hover,
 .navbar-trust .nav-link.active {
   color: var(--text-main);
-  background: rgba(124, 92, 255, 0.16);
+  background: var(--accent-focus);
 }
 
-/* Dropdown inside the trust navbar (dark glass theme) */
+/* Dropdown inside the trust navbar */
 .navbar-trust .nav-dropdown-menu {
-  background: #0b0d1c;
+  background: var(--bg-surface-elevated);
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -187,12 +262,67 @@ h1, h2, h3, h4, h5, h6 {
 .navbar-trust .nav-dropdown-menu .dropdown-item:focus,
 .navbar-trust .nav-dropdown-menu .dropdown-item.active {
   color: var(--text-main);
-  background: rgba(124, 92, 255, 0.16);
+  background: var(--accent-focus);
 }
 
 .navbar-trust .nav-dropdown-menu .dropdown-divider {
   border-color: var(--border-soft);
   margin: 0.35rem 0;
+}
+
+/* ---- Theme Toggle Button ------------------------------------------------ */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--text-main);
+  border-color: var(--accent-primary);
+  background: var(--bg-surface-elevated);
+}
+
+.theme-icon-sun,
+.theme-icon-moon {
+  display: none;
+  line-height: 1;
+}
+
+/* Default / Dark theme: show sun icon (suggests switching to light) */
+:root:not([data-theme="light"]) .theme-icon-sun,
+[data-theme="dark"] .theme-icon-sun {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Light theme: show moon icon (suggests switching to dark) */
+[data-theme="light"] .theme-icon-moon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-theme="light"] .theme-icon-sun {
+  display: none;
+}
+
+/* Light theme navbar toggler & alert overrides */
+[data-theme="light"] .navbar-trust .navbar-toggler-icon {
+  filter: invert(1) grayscale(100%);
+}
+[data-theme="light"] .navbar-trust .navbar-toggler {
+  border-color: var(--border);
 }
 
 /* Responsive nav visibility:
@@ -293,7 +423,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ---- Forms -------------------------------------------------------------- */
 .form-control-trust, .form-select-trust, textarea.form-control-trust {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-input);
   border: 1px solid var(--border);
   color: var(--text-main);
   border-radius: 12px;
@@ -303,13 +433,13 @@ h1, h2, h3, h4, h5, h6 {
 .form-control-trust::placeholder { color: var(--text-dim); }
 
 .form-control-trust:focus, .form-select-trust:focus {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(124, 92, 255, 0.7);
+  background: var(--bg-input);
+  border-color: var(--accent-primary);
   color: var(--text-main);
-  box-shadow: 0 0 0 0.25rem rgba(124, 92, 255, 0.18);
+  box-shadow: 0 0 0 0.25rem var(--accent-focus);
 }
 
-.form-select-trust option { background: #0c0e1e; color: var(--text-main); }
+.form-select-trust option { background: var(--bg-surface); color: var(--text-main); }
 
 .form-label-c { font-weight: 600; color: var(--text-muted); font-size: 0.88rem; letter-spacing: 0.02em; }
 
@@ -393,7 +523,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(var(--ring-color, var(--yellow)) calc(var(--value, 50) * 1%), rgba(255,255,255,0.08) 0);
+  background: conic-gradient(var(--ring-color, var(--yellow)) calc(var(--value, 50) * 1%), var(--border-soft) 0);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -404,15 +534,15 @@ h1, h2, h3, h4, h5, h6 {
   width: 74%;
   height: 74%;
   border-radius: 50%;
-  background: #0b0d1c;
+  background: var(--bg-surface);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25);
 }
 
-.gauge-num { font-size: 2.6rem; font-weight: 800; line-height: 1; }
+.gauge-num { font-size: 2.6rem; font-weight: 800; line-height: 1; color: var(--text-main); }
 .gauge-label { font-size: 0.78rem; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 700; }
 
 .status-pill {
@@ -432,9 +562,9 @@ h1, h2, h3, h4, h5, h6 {
   background: currentColor;
 }
 
-.badge-safe { background: rgba(45, 212, 167, 0.14); color: var(--green); border: 1px solid rgba(45, 212, 167, 0.35); }
-.badge-warning { background: rgba(245, 181, 68, 0.14); color: var(--yellow); border: 1px solid rgba(245, 181, 68, 0.35); }
-.badge-dangerous { background: rgba(255, 95, 109, 0.14); color: var(--red); border: 1px solid rgba(255, 95, 109, 0.35); }
+.badge-safe { background: var(--trust-safe-bg); color: var(--trust-safe); border: 1px solid var(--trust-safe); }
+.badge-warning { background: var(--trust-warning-bg); color: var(--trust-warning); border: 1px solid var(--trust-warning); }
+.badge-dangerous { background: var(--trust-danger-bg); color: var(--trust-danger); border: 1px solid var(--trust-danger); }
 .badge-info { background: rgba(56, 214, 255, 0.14); color: var(--accent-2); border: 1px solid rgba(56, 214, 255, 0.35); }
 
 /* ---- Blacklist banner ---------------------------------------------------- */
@@ -516,7 +646,7 @@ h1, h2, h3, h4, h5, h6 {
 .cat-unknown { background: rgba(56, 214, 255, 0.14); color: var(--accent-2); }
 
 /* Risk-aware email result */
-.gauge-risk .gauge-inner { background: #0b0d1c; }
+.gauge-risk .gauge-inner { background: var(--bg-surface); }
 .rec-box {
   border: 1px solid var(--border-soft);
   border-left-width: 5px;
@@ -631,7 +761,7 @@ h1, h2, h3, h4, h5, h6 {
   border-top: 1px solid var(--border-soft);
   padding: 3rem 0 2rem;
   margin-top: 4rem;
-  background: rgba(3, 4, 9, 0.6);
+  background: var(--bg-surface-elevated);
 }
 
 .footer-trust a { color: var(--text-muted); }
@@ -728,12 +858,12 @@ img { max-width: 100%; height: auto; }
 /* Collapsed (mobile) nav: floating panel, large touch targets */
 @media (max-width: 767.98px) {
   .navbar-trust .navbar-collapse {
-    background: rgba(5, 6, 15, 0.97);
+    background: var(--bg-surface-elevated);
     border: 1px solid var(--border-soft);
     border-radius: 14px;
     margin-top: 0.5rem;
     padding: 0.75rem;
-    box-shadow: 0 18px 50px rgba(2, 3, 12, 0.55);
+    box-shadow: var(--shadow);
   }
   .navbar-trust .navbar-nav { gap: 0.15rem; }
   .navbar-trust .nav-link {

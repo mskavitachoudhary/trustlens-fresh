@@ -71,6 +71,14 @@
 
   /* ---- Shared API helper ------------------------------------------------ */
   window.TrustLens = {
+    toggleTheme: function () {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("trustlens-theme", next);
+      return next;
+    },
+
     apiPost: function (url, data, isFormData) {
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
       const headers = { "X-Requested-With": "XMLHttpRequest" };
@@ -261,63 +269,25 @@
     }
   });
 
-  /* ---- Lightweight particle field -------------------------------------- */
-  const canvas = document.getElementById("particles-js");
-  if (canvas && canvas.getContext) {
-    const ctx = canvas.getContext("2d");
-    let w, h, particles = [];
-    const COUNT = window.innerWidth < 768 ? 40 : 70;
-
-    function resize() {
-      w = canvas.width = canvas.offsetWidth;
-      h = canvas.height = canvas.offsetHeight;
-    }
-    function spawn() {
-      particles = [];
-      for (let i = 0; i < COUNT; i++) {
-        particles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 2 + 0.6,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          a: Math.random() * 0.35 + 0.08
-        });
-      }
-    }
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      particles.forEach(function (p) {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(124, 92, 255, " + p.a + ")";
-        ctx.fill();
-      });
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 110) {
-            ctx.strokeStyle = "rgba(124, 92, 255, " + (0.12 * (1 - d / 110)) + ")";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
+  /* ---- Theme switcher --------------------------------------------------- */
+  function initThemeToggle() {
+    const btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("trustlens-theme", next);
+    });
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function (e) {
+        if (!localStorage.getItem("trustlens-theme")) {
+          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
         }
-      }
-      requestAnimationFrame(draw);
+      });
     }
-    resize();
-    spawn();
-    window.addEventListener("resize", function () { resize(); spawn(); });
-    draw();
   }
+  initThemeToggle();
 
   /* ---- Dashboard charts (lightweight canvas bars) ----------------------- */
   function drawBars(canvas, values, colors) {
