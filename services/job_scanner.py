@@ -211,6 +211,13 @@ def _probe(url: str) -> dict:
     try:
         if not re.match(r"^https?://", url, re.IGNORECASE):
             url = "https://" + url
+
+        from services.network_security import validate_public_url
+
+        is_valid, _ = validate_public_url(url)
+        if not is_valid:
+            return {"ok": False, "parked": False, "blocked": True, "url": None}
+
         resp = requests.get(
             url,
             timeout=Config.HTTP_TIMEOUT_SECONDS,

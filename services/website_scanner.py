@@ -230,6 +230,12 @@ def _tls_probe(host: str, port: int, timeout: int) -> dict:
     out = {"valid": False, "not_after": None, "issuer": "", "error": ""}
     if not host:
         return out
+    from services.network_security import validate_public_url
+
+    is_valid, err_msg = validate_public_url(f"https://{host}")
+    if not is_valid:
+        out["error"] = err_msg
+        return out
     try:
         ctx = ssl.create_default_context()
         ctx.check_hostname = True
@@ -322,13 +328,38 @@ def _fetch_page(url: str, timeout: int) -> dict:
     session = requests.Session()
     session.headers["User-Agent"] = USER_AGENT
 
+    from services.network_security import validate_public_url
+
+    is_valid, err_msg = validate_public_url(url)
+    if not is_valid:
+        info["fetch_error"] = f"blocked: {err_msg}"
+        return info
+
     def attempt(verify):
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 resp = session.get(
-                    url, timeout=timeout, allow_redirects=True, verify=verify,
+                    url, timeout=timeout, allow_redirects=True, verify=verify, stream=True,
                 )
+                chunks = []
+                total = 0
+                for chunk in resp.iter_content(chunk_size=16384):
+                    chunks.append(chunk)
+                    total += len(chunk)
+                    if total > 2 * 1024 * 1024:
+                        break
+                resp._content = b"".join(chunks)
+
+            # Check redirect history for private/restricted IPs
+            for hist in resp.history:
+                h_valid, h_err = validate_public_url(hist.url)
+                if not h_valid:
+                    return None, f"blocked: {h_err}"
+            dest_valid, dest_err = validate_public_url(resp.url)
+            if not dest_valid:
+                return None, f"blocked: {dest_err}"
+
             return resp, None
         except requests.exceptions.SSLError as exc:
             return None, f"ssl:{str(exc)}"
