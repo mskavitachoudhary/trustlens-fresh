@@ -47,17 +47,32 @@ def submit_report():
     if "screenshot" in request.files and request.files["screenshot"].filename:
         file = request.files["screenshot"]
         ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
-        if ext in current_app.config["ALLOWED_IMAGE_EXTENSIONS"]:
-            filename = f"report_{uuid.uuid4().hex[:10]}.{ext}"
-            upload_dir = os.path.join(current_app.config["UPLOAD_FOLDER"], "screenshots")
-            os.makedirs(upload_dir, exist_ok=True)
-            file.save(os.path.join(upload_dir, filename))
-            screenshot_path = f"uploads/screenshots/{filename}"
+        if ext not in current_app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+            return jsonify({"success": False, "error": "Unsupported file type. Use PNG, JPG, JPEG, GIF, WEBP or BMP."}), 400
+
+        filename = f"report_{uuid.uuid4().hex[:10]}.{ext}"
+        upload_dir = os.path.join(current_app.config["UPLOAD_FOLDER"], "screenshots")
+        os.makedirs(upload_dir, exist_ok=True)
+        full_path = os.path.join(upload_dir, filename)
+        file.save(full_path)
+
+        from routes.scanners import _verify_image_file
+        err = _verify_image_file(full_path)
+        if err:
+            if os.path.exists(full_path):
+                os.remove(full_path)
+            return jsonify({"success": False, "error": err}), 400
+
+        screenshot_path = f"uploads/screenshots/{filename}"
+
+    scam_date = None
+    if scam_date_str:
+        try:
+            scam_date = datetime.strptime(scam_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({"success": False, "error": "Invalid scam date format. Expected YYYY-MM-DD."}), 400
 
     try:
-        scam_date = None
-        if scam_date_str:
-            scam_date = datetime.strptime(scam_date_str, "%Y-%m-%d").date()
 
         report = ScamReport(
             user_id=current_user.id if current_user.is_authenticated else None,

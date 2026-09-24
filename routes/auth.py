@@ -3,6 +3,8 @@ Authentication routes: login, register, logout.
 Uses Flask-Login. Passwords are hashed with Werkzeug.
 """
 
+from __future__ import annotations
+
 import re
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
@@ -11,9 +13,18 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db
 from models.user import User
 
+from urllib.parse import urlsplit
+
 auth_bp = Blueprint("auth", __name__)
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
+
+def _is_safe_redirect(target: str | None) -> bool:
+    if not target:
+        return False
+    parsed = urlsplit(target)
+    return parsed.netloc == "" and not target.startswith("//") and target.startswith("/")
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -29,6 +40,8 @@ def login():
         if user and user.check_password(password):
             login_user(user, remember=bool(request.form.get("remember")))
             next_page = request.args.get("next")
+            if not _is_safe_redirect(next_page):
+                next_page = None
             flash(f"Welcome back, {user.full_name}!", "success")
             return redirect(next_page or url_for("dashboard.index"))
         flash("Invalid email or password.", "danger")
