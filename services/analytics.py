@@ -7,7 +7,7 @@ and the numbers are consistent across pages.
 
 from datetime import datetime, timedelta
 
-from models import db
+from models import db, utc_now
 from models.user import User
 from models.scan import (
     WebsiteScan,
@@ -45,18 +45,24 @@ def fraud_type_counts() -> list:
         key = (label or "Other").strip() or "Other"
         counts[key] = counts.get(key, 0) + amount
 
-    # 1. Community scam reports - the most explicit fraud signal.
-    for (label,) in db.session.query(ScamReport.scam_type).all():
-        _add(label)
-
-    # 2. Auto-classified WhatsApp scams.
-    rows = (
-        WhatsAppScan.query.filter(WhatsAppScan.scam_type.isnot(None))
-        .with_entities(WhatsAppScan.scam_type)
+    # 1. Community scam reports grouped by scam_type
+    report_groups = (
+        db.session.query(ScamReport.scam_type, db.func.count(ScamReport.id))
+        .group_by(ScamReport.scam_type)
         .all()
     )
-    for (label,) in rows:
-        _add(label)
+    for scam_type, count in report_groups:
+        _add(scam_type, count)
+
+    # 2. Auto-classified WhatsApp scams grouped by scam_type
+    wa_groups = (
+        db.session.query(WhatsAppScan.scam_type, db.func.count(WhatsAppScan.id))
+        .filter(WhatsAppScan.scam_type.isnot(None))
+        .group_by(WhatsAppScan.scam_type)
+        .all()
+    )
+    for scam_type, count in wa_groups:
+        _add(scam_type, count)
 
     # 3. Scanner categories that map to a fraud family by default.
     _add("Website/Phishing", WebsiteScan.query.count())
@@ -84,31 +90,59 @@ def scan_volume_timeseries(days: int = 14) -> list:
     Daily scan volume for the last `days` days.
     Returns a list of {date: "YYYY-MM-DD", count: int} oldest first.
     """
-    start = datetime.utcnow().date() - timedelta(days=days - 1)
-    rows = []
-    for offset in range(days):
-        day = start + timedelta(days=offset)
-        day_start = datetime(day.year, day.month, day.day)
-        day_end = day_start + timedelta(days=1)
-        total = sum(
-            m.query.filter(m.created_at >= day_start, m.created_at < day_end).count()
-            for m in SCAN_MODELS
+    start_date = utc_now().date() - timedelta(days=days - 1)
+    start_dt = datetime(start_date.year, start_date.month, start_date.day)
+
+    day_counts = {
+        (start_date + timedelta(days=offset)).isoformat(): 0
+        for offset in range(days)
+    }
+
+    for m in SCAN_MODELS:
+        date_col = db.func.date(m.created_at)
+        results = (
+            db.session.query(date_col, db.func.count(m.id))
+            .filter(m.created_at >= start_dt)
+            .group_by(date_col)
+            .all()
         )
-        rows.append({"date": day.isoformat(), "count": total})
-    return rows
+        for date_str, count in results:
+            if isinstance(date_str, datetime):
+                date_str = date_str.date().isoformat()
+            elif hasattr(date_str, "isoformat"):
+                date_str = date_str.isoformat()
+            if date_str in day_counts:
+                day_counts[date_str] += count
+
+    return [{"date": d, "count": day_counts[d]} for d in sorted(day_counts.keys())]
 
 
 def user_growth_timeseries(days: int = 14) -> list:
     """Daily new-user registrations for the last `days` days."""
-    start = datetime.utcnow().date() - timedelta(days=days - 1)
-    rows = []
-    for offset in range(days):
-        day = start + timedelta(days=offset)
-        day_start = datetime(day.year, day.month, day.day)
-        day_end = day_start + timedelta(days=1)
-        count = User.query.filter(User.created_at >= day_start, User.created_at < day_end).count()
-        rows.append({"date": day.isoformat(), "count": count})
-    return rows
+    start_date = utc_now().date() - timedelta(days=days - 1)
+    start_dt = datetime(start_date.year, start_date.month, start_date.day)
+
+    day_counts = {
+        (start_date + timedelta(days=offset)).isoformat(): 0
+        for offset in range(days)
+    }
+
+    date_col = db.func.date(User.created_at)
+    results = (
+        db.session.query(date_col, db.func.count(User.id))
+        .filter(User.created_at >= start_dt)
+        .group_by(date_col)
+        .all()
+    )
+    for date_str, count in results:
+        if isinstance(date_str, datetime):
+            date_str = date_str.date().isoformat()
+        elif hasattr(date_str, "isoformat"):
+            date_str = date_str.isoformat()
+        if date_str in day_counts:
+            day_counts[date_str] += count
+
+    return [{"date": d, "count": day_counts[d]} for d in sorted(day_counts.keys())]
 
 
 def category_volume() -> list:
@@ -127,7 +161,7 @@ def category_volume() -> list:
 
 def scan_log_timeseries(days: int = 14) -> list:
     """Daily AI log volume (matches the AILog audit table)."""
-    start = datetime.utcnow().date() - timedelta(days=days - 1)
+    start = utc_now().date() - timedelta(days=days - 1)
     rows = []
     for offset in range(days):
         day = start + timedelta(days=offset)

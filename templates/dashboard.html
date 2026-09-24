@@ -41,12 +41,13 @@
             <div class="table-responsive">
               <table class="table table-trust mb-0">
                 <thead>
-                  <tr><th>URL</th><th>Score</th><th>Status</th><th>Time</th></tr>
+                  <tr><th>Type</th><th>Target</th><th>Score</th><th>Status</th><th>Time</th></tr>
                 </thead>
                 <tbody>
                   {% for scan in recent_scans %}
                     <tr>
-                      <td class="small" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ scan.url }}</td>
+                      <td><span class="kbd-chip">{{ scan.type }}</span></td>
+                      <td class="small" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ scan.target }}</td>
                       <td class="fw-bold">{{ scan.trust_score }}</td>
                       <td>
                         {% if scan.status == 'safe' %}<span class="status-pill badge-safe">SAFE</span>
