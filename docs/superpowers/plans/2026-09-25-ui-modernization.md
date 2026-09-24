@@ -70,15 +70,15 @@
 - Modify: `templates/base.html`
 - Modify: `static/css/style.css`
 
-- [ ] **Step 1: Create Reusable SVG Icon Macro in `templates/components/icons.html`**
+- [x] **Step 1: Create Reusable SVG Icon Macro in `templates/components/icons.html`**
   - Build Jinja macros for standard vector icons (shield, lens, globe, mail, message, qr, receipt, briefcase, flask, scale, sun, moon, check, x-mark, alert).
   - Use 24x24 viewBox, `fill="none"`, `stroke="currentColor"`, `stroke-width="1.75"`.
 
-- [ ] **Step 2: Update Brand Mark and Navigation Icons in `templates/base.html`**
+- [x] **Step 2: Update Brand Mark and Navigation Icons in `templates/base.html`**
   - Replace `&#128274;` brand mark with a modern shield-lens vector SVG.
   - Style `.brand-mark` with clean indigo-emerald accent gradient or crisp monochrome.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
   - Commit as: `create vector svg icons and update brand mark`
 
 ---
