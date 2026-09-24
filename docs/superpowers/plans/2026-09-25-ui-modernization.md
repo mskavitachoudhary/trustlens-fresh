@@ -89,7 +89,7 @@
 - Modify: `templates/base.html`
 - Modify: `static/css/style.css`
 
-- [ ] **Step 1: Streamline Header Navigation in `templates/base.html`**
+- [x] **Step 1: Streamline Header Navigation in `templates/base.html`**
   - Eliminate confusing duplicate classes (`.nav-hide-md`, `.nav-drop-lg`, `#moreMenuT`, `#moreMenuD`).
   - Create a unified "Scanners" dropdown containing all 8 engines:
     1. Website Scanner (Phishing & Domain Checks)
@@ -102,14 +102,14 @@
     8. Claim Checker (Truth & Fact Verification)
   - Ensure standard direct nav links for Home, Scam Reports, Awareness, About, Contact.
 
-- [ ] **Step 2: Update Navbar Styling for Light and Dark Modes in `static/css/style.css`**
+- [x] **Step 2: Update Navbar Styling for Light and Dark Modes in `static/css/style.css`**
   - Style `.navbar-trust` with `--bg-surface` translucent backdrop, subtle bottom border, and crisp text links.
   - Style dropdown menu (`.nav-dropdown-menu`) with clean elevation and active indicator states.
 
-- [ ] **Step 3: Verify Responsive Navbar**
+- [x] **Step 3: Verify Responsive Navbar**
   - Verify dropdown expands cleanly on desktop and mobile viewports.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
   - Commit as: `unify navigation and add 8 scanner dropdown`
 
 ---

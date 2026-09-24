@@ -39,33 +39,99 @@
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav mx-auto mb-2 mb-md-0">
-          <li class="nav-item"><a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">Home</a></li>
-          <li class="nav-item"><a class="nav-link {% if request.endpoint and request.endpoint.split('.')[0] == 'scanners' %}active{% endif %}" href="{{ url_for('scanners.website_scanner_page') }}">Scanners</a></li>
-          <li class="nav-item"><a class="nav-link {% if request.endpoint == 'reports.list_reports' %}active{% endif %}" href="{{ url_for('reports.list_reports') }}">Scam Reports</a></li>
-          <li class="nav-item nav-hide-md"><a class="nav-link {% if request.endpoint == 'main.awareness' %}active{% endif %}" href="{{ url_for('main.awareness') }}">Awareness</a></li>
-          <li class="nav-item nav-hide-md"><a class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">About</a></li>
-          <li class="nav-item nav-hide-md"><a class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Contact</a></li>
-          <li class="nav-item nav-hide-md nav-hide-lg"><a class="nav-link" href="{{ url_for('main.product_scanner') }}">Product Scanner</a></li>
-          <li class="nav-item nav-hide-md nav-hide-lg"><a class="nav-link" href="{{ url_for('main.claim_checker') }}">Claim Checker</a></li>
-
-          <li class="nav-item dropdown nav-drop-md">
-            <a class="nav-link dropdown-toggle" href="#" id="moreMenuT" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
-            <ul class="dropdown-menu dropdown-menu-end nav-dropdown-menu" aria-labelledby="moreMenuT">
-              <li><a class="dropdown-item {% if request.endpoint == 'main.awareness' %}active{% endif %}" href="{{ url_for('main.awareness') }}">Awareness</a></li>
-              <li><a class="dropdown-item {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">About</a></li>
-              <li><a class="dropdown-item {% if request.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Contact</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.product_scanner') }}">Product Scanner</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.claim_checker') }}">Claim Checker</a></li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}" href="{{ url_for('main.index') }}">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.endpoint and (request.endpoint.startswith('scanners.') or request.endpoint in ['main.product_scanner', 'main.claim_checker']) %}active{% endif %}" href="#" id="scannersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Scanners
+            </a>
+            <ul class="dropdown-menu nav-dropdown-menu" aria-labelledby="scannersDropdown">
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.website_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.website_scanner_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('globe', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Website Scanner</span>
+                    <span class="dropdown-item-desc">Phishing &amp; Domain Checks</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.email_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.email_scanner_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('mail', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Email Scanner</span>
+                    <span class="dropdown-item-desc">Phishing &amp; Urgency Analysis</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.job_checker_page' %}active{% endif %}" href="{{ url_for('scanners.job_checker_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('briefcase', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Job Checker</span>
+                    <span class="dropdown-item-desc">Offer Letter &amp; Recruiter Fraud</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.whatsapp_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.whatsapp_scanner_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('message', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">WhatsApp Scanner</span>
+                    <span class="dropdown-item-desc">Chat Screenshot OCR</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.qr_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.qr_scanner_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('qr', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">QR Scanner</span>
+                    <span class="dropdown-item-desc">Destination &amp; Payload Safety</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'scanners.payment_analyzer_page' %}active{% endif %}" href="{{ url_for('scanners.payment_analyzer_page') }}">
+                  <span class="dropdown-item-icon">{{ icon('receipt', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Payment Analyzer</span>
+                    <span class="dropdown-item-desc">Fake Screenshot &amp; UPI Validation</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'main.product_scanner' %}active{% endif %}" href="{{ url_for('main.product_scanner') }}">
+                  <span class="dropdown-item-icon">{{ icon('flask', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Product Scanner</span>
+                    <span class="dropdown-item-desc">Ingredient Safety &amp; Database Lookup</span>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item {% if request.endpoint == 'main.claim_checker' %}active{% endif %}" href="{{ url_for('main.claim_checker') }}">
+                  <span class="dropdown-item-icon">{{ icon('scale', size=18) }}</span>
+                  <div class="dropdown-item-content">
+                    <span class="dropdown-item-title">Claim Checker</span>
+                    <span class="dropdown-item-desc">Truth &amp; Fact Verification</span>
+                  </div>
+                </a>
+              </li>
             </ul>
           </li>
-
-          <li class="nav-item dropdown nav-drop-lg">
-            <a class="nav-link dropdown-toggle" href="#" id="moreMenuD" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
-            <ul class="dropdown-menu dropdown-menu-end nav-dropdown-menu" aria-labelledby="moreMenuD">
-              <li><a class="dropdown-item" href="{{ url_for('main.product_scanner') }}">Product Scanner</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('main.claim_checker') }}">Claim Checker</a></li>
-            </ul>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'reports.list_reports' %}active{% endif %}" href="{{ url_for('reports.list_reports') }}">Scam Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'main.awareness' %}active{% endif %}" href="{{ url_for('main.awareness') }}">Awareness</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}" href="{{ url_for('main.about') }}">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Contact</a>
           </li>
         </ul>
         <div class="d-flex align-items-center gap-2 nav-auth">
@@ -109,7 +175,7 @@
 
   <footer class="footer-trust">
     <div class="container">
-      <div class="row g-4 align-items-center">
+      <div class="row g-4 align-items-start">
         <div class="col-md-5">
           <div class="d-flex align-items-center gap-2 fw-bold fs-5 mb-2">
             <span class="brand-mark">{{ icon('brand', size=22, stroke_width=2) }}</span>
@@ -117,18 +183,30 @@
           </div>
           <p class="text-dim-c mb-0 small">AI based information verification system. Verify before you trust &mdash; stay one step ahead of online scams.</p>
         </div>
-        <div class="col-md-3">
-          <div class="fw-bold small text-uppercase text-dim-c mb-2">Tools</div>
-          <ul class="list-unstyled small">
-            <li><a href="{{ url_for('scanners.website_scanner_page') }}">Website Scanner</a></li>
-            <li><a href="{{ url_for('scanners.email_scanner_page') }}">Email Scanner</a></li>
-            <li><a href="{{ url_for('scanners.job_checker_page') }}">Job Checker</a></li>
-            <li><a href="{{ url_for('scanners.qr_scanner_page') }}">QR Scanner</a></li>
-          </ul>
-        </div>
         <div class="col-md-4">
+          <div class="fw-bold small text-uppercase text-dim-c mb-2">Tools</div>
+          <div class="row g-2 small">
+            <div class="col-6">
+              <ul class="list-unstyled mb-0 d-flex flex-column gap-1">
+                <li><a href="{{ url_for('scanners.website_scanner_page') }}">Website Scanner</a></li>
+                <li><a href="{{ url_for('scanners.email_scanner_page') }}">Email Scanner</a></li>
+                <li><a href="{{ url_for('scanners.job_checker_page') }}">Job Checker</a></li>
+                <li><a href="{{ url_for('scanners.whatsapp_scanner_page') }}">WhatsApp Scanner</a></li>
+              </ul>
+            </div>
+            <div class="col-6">
+              <ul class="list-unstyled mb-0 d-flex flex-column gap-1">
+                <li><a href="{{ url_for('scanners.qr_scanner_page') }}">QR Scanner</a></li>
+                <li><a href="{{ url_for('scanners.payment_analyzer_page') }}">Payment Analyzer</a></li>
+                <li><a href="{{ url_for('main.product_scanner') }}">Product Scanner</a></li>
+                <li><a href="{{ url_for('main.claim_checker') }}">Claim Checker</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
           <div class="fw-bold small text-uppercase text-dim-c mb-2">Company</div>
-          <ul class="list-unstyled small">
+          <ul class="list-unstyled small d-flex flex-column gap-1">
             <li><a href="{{ url_for('main.about') }}">About</a></li>
             <li><a href="{{ url_for('main.awareness') }}">Cyber Awareness</a></li>
             <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
