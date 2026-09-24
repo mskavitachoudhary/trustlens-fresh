@@ -3,9 +3,15 @@ TrustLens models package.
 Exposes a single `db` instance and every model through one import point.
 """
 
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
+
+def utc_now() -> datetime:
+    """Return current UTC datetime as a naive datetime object."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 from models.product_db import (  # noqa: E402,F401
     Ingredient, Product, ProductIngredient, Category,
@@ -37,7 +43,7 @@ def init_admin_user(app):
             admin = User(
                 full_name="TrustLens Admin",
                 email=admin_email,
-                password_hash=generate_password_hash(app.config["ADMIN_PASSWORD"]),
+                password_hash=generate_password_hash(app.config["ADMIN_PASSWORD"], method="pbkdf2:sha256"),
                 role="admin",
                 is_verified=True,
             )

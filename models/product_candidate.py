@@ -18,7 +18,7 @@ Candidates can be promoted / reviewed later but that is out of scope here.
 
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 
 class ProductCandidate(db.Model):
@@ -45,10 +45,10 @@ class ProductCandidate(db.Model):
     confidence_hint = db.Column(db.String(20), nullable=True)       # High | Medium | Low | BrandOnly
     source_note = db.Column(db.Text, nullable=True)                 # human note
     scan_count = db.Column(db.Integer, nullable=False, default=1)   # dedupe counter
-    first_seen_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    last_seen_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow,
-                             onupdate=datetime.utcnow)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    first_seen_at = db.Column(db.DateTime, nullable=False, default=utc_now)
+    last_seen_at = db.Column(db.DateTime, nullable=False, default=utc_now,
+                             onupdate=utc_now)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     def __repr__(self):
         return (

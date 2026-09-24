@@ -6,9 +6,11 @@ moves through a 4-state workflow (new / under review / resolved / rejected) and
 admins respond with a reply that is stored alongside a status change.
 """
 
+from __future__ import annotations
+
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 # Workflow statuses surfaced in the admin panel and to the reporter.
 REPORT_STATUSES = ("new", "under review", "resolved", "rejected")
@@ -40,7 +42,7 @@ class ScamReport(db.Model):
     website_url = db.Column(db.String(500), nullable=True)
     scam_date = db.Column(db.Date, nullable=True)
     status = db.Column(db.String(20), nullable=False, default="new")  # new|under review|resolved|rejected
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     replies = db.relationship(
         "ScamReportReply",
@@ -101,7 +103,7 @@ class ScamReportReply(db.Model):
     status_after = db.Column(db.String(20), nullable=False, default="new")
     # Cleared once the reporter has seen the update on their dashboard.
     is_viewed = db.Column(db.Boolean, nullable=False, default=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     def __repr__(self) -> str:
         return f"<ScamReportReply #{self.id} report={self.report_id} status={self.status_after}>"

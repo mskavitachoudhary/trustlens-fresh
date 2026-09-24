@@ -7,7 +7,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from models import db
+from models import db, utc_now
 
 
 class User(UserMixin, db.Model):
@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(10), nullable=False, default="user")  # user | admin
     is_verified = db.Column(db.Boolean, nullable=False, default=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     # Relationships
     website_scans = db.relationship("WebsiteScan", backref="user", lazy=True)
@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
 
     # ---- Password helpers ----
     def set_password(self, raw_password: str) -> None:
-        self.password_hash = generate_password_hash(raw_password)
+        self.password_hash = generate_password_hash(raw_password, method="pbkdf2:sha256")
 
     def check_password(self, raw_password: str) -> bool:
         return check_password_hash(self.password_hash, raw_password)

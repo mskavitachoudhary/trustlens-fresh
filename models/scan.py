@@ -4,7 +4,7 @@ Scan models. Every scanner result is persisted so analytics can stay accurate.
 
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 
 class ScanMixin:
@@ -13,7 +13,7 @@ class ScanMixin:
     id = db.Column(db.Integer, primary_key=True)
     trust_score = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), nullable=False, default="safe")  # safe | warning | dangerous
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
     def to_dict(self) -> dict:
         return {

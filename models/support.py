@@ -4,7 +4,7 @@ Support models - contact messages and user feedback.
 
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 
 class ContactMessage(db.Model):
@@ -18,7 +18,7 @@ class ContactMessage(db.Model):
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, nullable=False, default=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
 
 class Feedback(db.Model):
@@ -30,4 +30,4 @@ class Feedback(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     rating = db.Column(db.Integer, nullable=False)  # 1..5
     comment = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)

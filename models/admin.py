@@ -4,7 +4,7 @@ Admin / operations models - blacklist and AI logs.
 
 from datetime import datetime
 
-from models import db
+from models import db, utc_now
 
 
 class BlacklistedDomain(db.Model):
@@ -16,7 +16,7 @@ class BlacklistedDomain(db.Model):
     domain = db.Column(db.String(255), unique=True, nullable=False, index=True)
     reason = db.Column(db.Text, nullable=True)
     added_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
 
 
 class AILog(db.Model):
@@ -30,4 +30,4 @@ class AILog(db.Model):
     score = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), nullable=False, default="safe")
     processing_time_ms = db.Column(db.Integer, nullable=False, default=0)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utc_now)
