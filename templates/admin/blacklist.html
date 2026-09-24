@@ -14,6 +14,7 @@
 
         <div class="glass p-4 mb-4">
           <form method="post" action="{{ url_for('admin.blacklist_add') }}" class="row g-2 align-items-end">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="col-md-4">
               <label class="form-label-c" for="domain">Domain</label>
               <input type="text" class="form-control form-control-trust" id="domain" name="domain" placeholder="scam-site.click" required>
@@ -41,7 +42,10 @@
                     <td class="small text-muted-c">{{ d.reason or '&mdash;'|safe }}</td>
                     <td class="text-dim-c small">{{ d.created_at.strftime('%d %b %Y') }}</td>
                     <td class="text-end">
-                      <a class="btn btn-ghost btn-sm-trust" href="{{ url_for('admin.blacklist_delete', domain_id=d.id) }}" onclick="return confirm('Remove {{ d.domain }} from blacklist?');">Remove</a>
+                      <form method="post" action="{{ url_for('admin.blacklist_delete', domain_id=d.id) }}" class="d-inline" onsubmit="return confirm('Remove {{ d.domain }} from blacklist?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-ghost btn-sm-trust text-danger">Remove</button>
+                      </form>
                     </td>
                   </tr>
                 {% else %}

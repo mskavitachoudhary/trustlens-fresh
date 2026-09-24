@@ -21,6 +21,7 @@
           <details>
             <summary class="fw-bold mb-2">&#10133; Add a new ingredient</summary>
             <form method="post" action="{{ url_for('admin.ingredient_add') }}" class="row g-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <div class="col-md-6">
                 <label class="form-label-c" for="ingredient_name">Ingredient name *</label>
                 <input type="text" class="form-control form-control-trust" id="ingredient_name" name="ingredient_name" required>
@@ -128,6 +129,7 @@
                     <td class="text-end">
                       <form method="post" action="{{ url_for('admin.ingredient_delete', ingredient_id=r.ingredient_id) }}" class="d-inline"
                             onsubmit="return confirm('Delete {{ r.ingredient_name }}?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-danger-trust btn-sm-trust">Delete</button>
                       </form>
                     </td>

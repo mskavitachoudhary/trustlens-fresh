@@ -1,7 +1,6 @@
-"""
-Admin panel routes. Every route requires an authenticated admin user.
-"""
+from __future__ import annotations
 
+import uuid
 from functools import wraps
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, jsonify
@@ -179,14 +178,18 @@ def blacklist_add():
     return redirect(url_for("admin.blacklist"))
 
 
-@admin_bp.route("/blacklist/<int:domain_id>/delete")
+@admin_bp.route("/blacklist/<int:domain_id>/delete", methods=["POST"])
 @admin_required
 def blacklist_delete(domain_id):
-    domain = db.session.get(BlacklistedDomain, domain_id)
-    if domain:
-        db.session.delete(domain)
-        db.session.commit()
-        flash(f"{domain.domain} removed from blacklist.", "success")
+    try:
+        domain = db.session.get(BlacklistedDomain, domain_id)
+        if domain:
+            db.session.delete(domain)
+            db.session.commit()
+            flash(f"{domain.domain} removed from blacklist.", "success")
+    except Exception as exc:
+        db.session.rollback()
+        flash(f"Error removing domain: {exc}", "danger")
     return redirect(url_for("admin.blacklist"))
 
 
@@ -248,13 +251,17 @@ def messages():
     return render_template("admin/messages.html", messages=messages)
 
 
-@admin_bp.route("/messages/<int:msg_id>/read")
+@admin_bp.route("/messages/<int:msg_id>/read", methods=["POST"])
 @admin_required
 def message_read(msg_id):
-    msg = db.session.get(ContactMessage, msg_id)
-    if msg:
-        msg.is_read = True
-        db.session.commit()
+    try:
+        msg = db.session.get(ContactMessage, msg_id)
+        if msg:
+            msg.is_read = True
+            db.session.commit()
+    except Exception as exc:
+        db.session.rollback()
+        flash(f"Error updating message: {exc}", "danger")
     return redirect(url_for("admin.messages"))
 
 
@@ -293,9 +300,14 @@ def _resolve_ingredient(name: str):
     if not name:
         return None
     target = _norm(name)
-    for ing in Ingredient.query.all():
-        aliases = (ing.aliases or []) + [ing.ingredient_name, ing.normalized_name]
-        if any(_norm(a) == target for a in aliases):
+    match = Ingredient.query.filter(
+        (Ingredient.normalized_name == target) |
+        (Ingredient.ingredient_name.ilike(name.strip()))
+    ).first()
+    if match:
+        return match
+    for ing in Ingredient.query.filter(Ingredient.aliases.isnot(None)).all():
+        if any(_norm(a) == target for a in (ing.aliases or [])):
             return ing
     return None
 
@@ -386,12 +398,11 @@ def _apply_product_fields(product: Product, fields: dict) -> None:
 
 
 def _generate_product_id(brand_name: str, product_name: str) -> str:
-    base = "PRD-" + _norm(f"{brand_name} {product_name}").upper()[:36]
-    candidate = base
-    n = 1
+    base = "PRD-" + _norm(f"{brand_name} {product_name}").upper()[:30]
+    unique_suffix = uuid.uuid4().hex[:6].upper()
+    candidate = f"{base}-{unique_suffix}"
     while db.session.get(Product, candidate):
-        candidate = f"{base}-{n}"
-        n += 1
+        candidate = f"{base}-{uuid.uuid4().hex[:6].upper()}"
     return candidate
 
 
@@ -435,23 +446,28 @@ def product_new():
             for err in errors:
                 flash(err, "danger")
             return redirect(url_for("admin.product_new"))
-        product = Product(product_id=_generate_product_id(fields["brand_name"], fields["product_name"]), **fields)
-        db.session.add(product)
-        db.session.flush()
-        for ing, conc, unit, role in parsed:
-            db.session.add(ProductIngredient(
-                product_id=product.product_id,
-                ingredient_id=ing.ingredient_id,
-                concentration=conc,
-                concentration_unit=unit,
-                role=role,
-                source=fields["source"],
-                source_url=fields["source_url"],
-                source_date=fields["source_date"],
-            ))
-        db.session.commit()
-        flash(f"Product '{product.brand_name} {product.product_name}' added to the verified database.", "success")
-        return redirect(url_for("admin.products"))
+        try:
+            product = Product(product_id=_generate_product_id(fields["brand_name"], fields["product_name"]), **fields)
+            db.session.add(product)
+            db.session.flush()
+            for ing, conc, unit, role in parsed:
+                db.session.add(ProductIngredient(
+                    product_id=product.product_id,
+                    ingredient_id=ing.ingredient_id,
+                    concentration=conc,
+                    concentration_unit=unit,
+                    role=role,
+                    source=fields["source"],
+                    source_url=fields["source_url"],
+                    source_date=fields["source_date"],
+                ))
+            db.session.commit()
+            flash(f"Product '{product.brand_name} {product.product_name}' added to the verified database.", "success")
+            return redirect(url_for("admin.products"))
+        except Exception as exc:
+            db.session.rollback()
+            flash(f"Failed to add product: {exc}", "danger")
+            return redirect(url_for("admin.product_new"))
     return render_template(
         "admin/product_form.html",
         product=None,
@@ -483,22 +499,27 @@ def product_edit(product_id):
             for err in errors:
                 flash(err, "danger")
             return redirect(url_for("admin.product_edit", product_id=product_id))
-        _apply_product_fields(product, fields)
-        product.associations.clear()
-        for ing, conc, unit, role in parsed:
-            db.session.add(ProductIngredient(
-                product_id=product.product_id,
-                ingredient_id=ing.ingredient_id,
-                concentration=conc,
-                concentration_unit=unit,
-                role=role,
-                source=fields["source"],
-                source_url=fields["source_url"],
-                source_date=fields["source_date"],
-            ))
-        db.session.commit()
-        flash(f"Product '{product.brand_name} {product.product_name}' updated.", "success")
-        return redirect(url_for("admin.products"))
+        try:
+            _apply_product_fields(product, fields)
+            product.associations.clear()
+            for ing, conc, unit, role in parsed:
+                db.session.add(ProductIngredient(
+                    product_id=product.product_id,
+                    ingredient_id=ing.ingredient_id,
+                    concentration=conc,
+                    concentration_unit=unit,
+                    role=role,
+                    source=fields["source"],
+                    source_url=fields["source_url"],
+                    source_date=fields["source_date"],
+                ))
+            db.session.commit()
+            flash(f"Product '{product.brand_name} {product.product_name}' updated.", "success")
+            return redirect(url_for("admin.products"))
+        except Exception as exc:
+            db.session.rollback()
+            flash(f"Failed to update product: {exc}", "danger")
+            return redirect(url_for("admin.product_edit", product_id=product_id))
     current_ingredients = "\n".join(
         f"{assoc.ingredient.ingredient_name} | {assoc.concentration or ''} | {assoc.concentration_unit or ''} | {assoc.role or ''}"
         for assoc in product.associations
@@ -523,12 +544,16 @@ def product_edit(product_id):
 @admin_bp.route("/products/<product_id>/delete", methods=["POST"])
 @admin_required
 def product_delete(product_id):
-    product = db.session.get(Product, product_id)
-    if product:
-        name = f"{product.brand_name} {product.product_name}"
-        db.session.delete(product)
-        db.session.commit()
-        flash(f"Product '{name}' deleted.", "success")
+    try:
+        product = db.session.get(Product, product_id)
+        if product:
+            name = f"{product.brand_name} {product.product_name}"
+            db.session.delete(product)
+            db.session.commit()
+            flash(f"Product '{name}' deleted.", "success")
+    except Exception as exc:
+        db.session.rollback()
+        flash(f"Failed to delete product: {exc}", "danger")
     return redirect(url_for("admin.products"))
 
 
@@ -597,9 +622,13 @@ def ingredient_add():
         source_url=(request.form.get("source_url") or "").strip() or None,
         source_date=(request.form.get("source_date") or "").strip() or None,
     )
-    db.session.add(ing)
-    db.session.commit()
-    flash(f"Ingredient '{name}' added to the reference database.", "success")
+    try:
+        db.session.add(ing)
+        db.session.commit()
+        flash(f"Ingredient '{name}' added to the reference database.", "success")
+    except Exception as exc:
+        db.session.rollback()
+        flash(f"Failed to add ingredient: {exc}", "danger")
     return redirect(url_for("admin.ingredients"))
 
 
@@ -615,9 +644,13 @@ def ingredient_delete(ingredient_id):
                 "danger",
             )
         else:
-            db.session.delete(ing)
-            db.session.commit()
-            flash(f"Ingredient '{ing.ingredient_name}' deleted.", "success")
+            try:
+                db.session.delete(ing)
+                db.session.commit()
+                flash(f"Ingredient '{ing.ingredient_name}' deleted.", "success")
+            except Exception as exc:
+                db.session.rollback()
+                flash(f"Failed to delete ingredient: {exc}", "danger")
     return redirect(url_for("admin.ingredients"))
 
 
@@ -653,9 +686,13 @@ def category_add():
         parent_category_id=parent_id,
         sort_order=max_order + 1,
     )
-    db.session.add(cat)
-    db.session.commit()
-    flash(f"Category '{name}' added.", "success")
+    try:
+        db.session.add(cat)
+        db.session.commit()
+        flash(f"Category '{name}' added.", "success")
+    except Exception as exc:
+        db.session.rollback()
+        flash(f"Failed to add category: {exc}", "danger")
     return redirect(url_for("admin.categories"))
 
 
@@ -672,7 +709,11 @@ def category_delete(category_id):
             if in_use:
                 flash(f"Category '{cat.category_name}' is used by {in_use} product(s) and cannot be deleted.", "danger")
             else:
-                db.session.delete(cat)
-                db.session.commit()
-                flash(f"Category '{cat.category_name}' deleted.", "success")
+                try:
+                    db.session.delete(cat)
+                    db.session.commit()
+                    flash(f"Category '{cat.category_name}' deleted.", "success")
+                except Exception as exc:
+                    db.session.rollback()
+                    flash(f"Failed to delete category: {exc}", "danger")
     return redirect(url_for("admin.categories"))

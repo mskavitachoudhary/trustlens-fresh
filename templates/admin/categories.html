@@ -21,6 +21,7 @@
           <details>
             <summary class="fw-bold mb-2">&#10133; Add a new category</summary>
             <form method="post" action="{{ url_for('admin.category_add') }}" class="row g-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <div class="col-md-4">
                 <label class="form-label-c" for="category_name">Category name *</label>
                 <input type="text" class="form-control form-control-trust" id="category_name" name="category_name" required>
@@ -67,6 +68,7 @@
                     <td class="text-end">
                       <form method="post" action="{{ url_for('admin.category_delete', category_id=cat.category_id) }}" class="d-inline"
                             onsubmit="return confirm('Delete category {{ cat.category_name }}?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-danger-trust btn-sm-trust">Delete</button>
                       </form>
                     </td>

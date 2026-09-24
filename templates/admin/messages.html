@@ -26,7 +26,10 @@
                   <div class="fw-bold small text-dim-c mb-1">{{ m.subject }}</div>
                   <p class="text-muted-c small mb-2">{{ m.message }}</p>
                   {% if not m.is_read %}
-                    <a class="btn btn-ghost btn-sm-trust" href="{{ url_for('admin.message_read', msg_id=m.id) }}">Mark as read</a>
+                    <form method="post" action="{{ url_for('admin.message_read', msg_id=m.id) }}" class="d-inline">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-ghost btn-sm-trust">Mark as read</button>
+                    </form>
                   {% endif %}
                 </div>
               {% endfor %}

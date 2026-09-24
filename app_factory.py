@@ -7,11 +7,14 @@ import logging
 
 from flask import Flask, render_template
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 
 from config import Config
 from database.init_db import init_app as init_db
 from models import db, init_admin_user
 from routes import register_blueprints
+
+csrf = CSRFProtect()
 
 
 def create_app(config_class=Config) -> Flask:
@@ -28,6 +31,7 @@ def create_app(config_class=Config) -> Flask:
 
     # ---- Extensions ----
     db.init_app(app)
+    csrf.init_app(app)
 
     login_manager = LoginManager(app)
     login_manager.login_view = "auth.login"

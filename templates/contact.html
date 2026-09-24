@@ -13,6 +13,7 @@
 
     <div class="glass p-4 p-lg-5 reveal">
       <form method="post" action="{{ url_for('main.contact') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label-c" for="name">Your name</label>

@@ -11,6 +11,7 @@
       <p class="text-muted-c small mb-0">Sign in to access your dashboard and scan history.</p>
     </div>
     <form method="post" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="mb-3">
         <label class="form-label-c" for="email">Email address</label>
         <input type="email" class="form-control form-control-trust" id="email" name="email" placeholder="you@example.com" required autofocus>

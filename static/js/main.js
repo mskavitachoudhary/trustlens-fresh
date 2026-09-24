@@ -72,8 +72,16 @@
   /* ---- Shared API helper ------------------------------------------------ */
   window.TrustLens = {
     apiPost: function (url, data, isFormData) {
-      const opts = { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } };
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+      const headers = { "X-Requested-With": "XMLHttpRequest" };
+      if (csrfToken) {
+        headers["X-CSRFToken"] = csrfToken;
+      }
+      const opts = { method: "POST", headers: headers };
       if (isFormData) {
+        if (data instanceof FormData && csrfToken && !data.has("csrf_token")) {
+          data.append("csrf_token", csrfToken);
+        }
         opts.body = data; // FormData sets its own multipart content-type
       } else {
         opts.headers["Content-Type"] = "application/json";
