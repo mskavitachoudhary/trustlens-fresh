@@ -58,6 +58,10 @@ from services.product_scanner import (  # noqa: E402
 def _font():
     for path in (
         os.environ.get("TRUSTLENS_TEST_FONT", ""),
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         r"C:\Windows\Fonts\arial.ttf",
         r"C:\Windows\Fonts\segoeui.ttf",
     ):
@@ -351,8 +355,13 @@ def test_spec_trust_bands():
 
 def _app_client():
     from app_factory import create_app
+    from config import Config
 
-    return create_app().test_client()
+    class ProductTestConfig(Config):
+        TESTING = True
+        WTF_CSRF_ENABLED = False
+
+    return create_app(ProductTestConfig).test_client()
 
 
 def test_route_valid_image():
@@ -472,6 +481,10 @@ def _scan_db(input_text=""):
 def _big_font(size=56):
     for path in (
         os.environ.get("TRUSTLENS_TEST_FONT", ""),
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         r"C:\Windows\Fonts\arial.ttf",
         r"C:\Windows\Fonts\segoeui.ttf",
     ):

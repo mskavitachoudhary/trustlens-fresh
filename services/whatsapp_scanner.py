@@ -69,9 +69,19 @@ def _get_reader():
         with _reader_lock:
             if _reader is None:
                 import easyocr
+                from pathlib import Path
+
+                workspace_model_dir = Path(__file__).resolve().parent.parent / "instance" / ".easyocr" / "model"
+                model_dir = str(workspace_model_dir) if workspace_model_dir.exists() else None
 
                 logger.info("Loading EasyOCR (first run downloads a model)...")
-                _reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+                _reader = easyocr.Reader(
+                    ["en"],
+                    gpu=False,
+                    verbose=False,
+                    model_storage_directory=model_dir,
+                    download_enabled=False if model_dir else True,
+                )
                 logger.info("EasyOCR ready.")
     return _reader
 
@@ -83,12 +93,19 @@ def extract_text_ocr(image_path: str) -> str:
     """
     try:
         reader = _get_reader()
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        try:
             future = pool.submit(reader.readtext, image_path, detail=0, paragraph=True)
             lines = future.result(timeout=Config.OCR_TIMEOUT_SECONDS)
-        return "\n".join(str(line).strip() for line in lines if str(line).strip())
-    except concurrent.futures.TimeoutError:
-        logger.warning("OCR timed out for %s", image_path)
+            pool.shutdown(wait=False)
+            return "\n".join(str(line).strip() for line in lines if str(line).strip())
+        except concurrent.futures.TimeoutError:
+            pool.shutdown(wait=False, cancel_futures=True)
+            logger.warning("OCR timed out for %s", image_path)
+            return ""
+        except Exception:
+            pool.shutdown(wait=False)
+            raise
     except ImportError:
         logger.warning("EasyOCR not installed - skipping OCR")
     except Exception:  # noqa: BLE001

@@ -37,6 +37,8 @@ Honesty rules baked into the score:
     the same input always yields the same result.
 """
 
+from __future__ import annotations
+
 import hashlib
 import re
 import time
@@ -3596,7 +3598,7 @@ def _identify_product(combined: str, barcode_digits: str = "") -> dict:
         brand_hit = bool(brand_tokens) and bool(brand_tokens & tokens)
         name_full = bool(name_tokens) and name_tokens <= tokens
         name_overlap = len(name_tokens & tokens) / max(1, len(name_tokens))
-        var_full = bool(var_tokens) and var_tokens <= tokens
+        var_full = (not var_tokens) or (var_tokens <= tokens)
         sig_match = bool(signature) and signature in norm
         barcode_match = bool(product.barcode) and product.barcode in all_barcode_digits
 

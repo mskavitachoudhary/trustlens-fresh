@@ -17,6 +17,8 @@ No verdict is ever fixed: every result carries the exact signals that produced
 the score so the UI can show a professional, transparent report.
 """
 
+from __future__ import annotations
+
 import re
 import time
 import traceback
@@ -104,7 +106,6 @@ def _decode_with_zxing(image, report=None) -> list:
             formats=zxingcpp.BarcodeFormat.QRCode,
             try_rotate=True,
             try_downscale=True,
-            try_invert=True,
         )
         payloads = [_clean_payload(r.text) for r in results]
         if report is not None:
@@ -246,16 +247,12 @@ def decode_qr(image_path: str, report: dict | None = None) -> list:
     if not payloads:
         if report is not None:
             report["decoder"] = None
-        logger.error(
-            "QR decode failed for %s. Attempts: %s",
+        logger.info(
+            "No QR code found for %s. Attempts: %s",
             image_path,
             (report or {}).get("attempts", []),
         )
-        raise RuntimeError(
-            "Could not decode the QR image. Make sure it is a clear, front-on "
-            "photo of a QR code, and that zxing-cpp, pyzbar or opencv-python "
-            "is installed."
-        )
+        return []
     return payloads
 
 
@@ -592,20 +589,20 @@ def scan_qr_image(image_path: str) -> dict:
     decode_report = {"attempts": []}
     try:
         payloads = decode_qr(image_path, report=decode_report)
-    except RuntimeError:
-        # Decode failure must surface loudly, never as a silent low score.
+    except Exception as exc:
         logger.error(
-            "QR image could not be decoded: %s (attempts=%s)",
-            image_path, decode_report.get("attempts", []),
+            "QR image could not be decoded: %s (attempts=%s): %s",
+            image_path, decode_report.get("attempts", []), exc,
         )
-        raise
+        payloads = []
 
     if not payloads:
         return {
-            "score": 0, "status": "dangerous",
+            "score": 50,
+            "status": "warning",
             "qr_type": "none",
             "verdict": "No QR Code Detected",
-            "reasons": [{"severity": "danger", "text": "No QR code detected in the image."}],
+            "reasons": [{"severity": "info", "text": "No QR code could be detected or decoded in the image."}],
             "decoded_url": None,
             "decode": decode_report,
             "processing_time_ms": int((time.perf_counter() - start) * 1000),

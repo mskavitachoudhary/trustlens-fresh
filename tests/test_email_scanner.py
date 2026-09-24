@@ -408,13 +408,13 @@ def test_strong_overrides_harmless_words():
                 "review your account. Regards, Security Team. Enter your "
                 "password and OTP now on http://secure-login-verify.example.net/password "
                 "to avoid permanent account deletion.")
-    score = es.scan_email(phishing)["score"]
+    score = es.scan_email(phishing)["risk_score"]
     if score < 61:
         failures.append(f"phishing + pleasantries scored {score} (expected high/very_high)")
     # Harmless words alone must stay very low / low.
     benign = ("Thank you for your order. Regards, Security Team. Please see "
               "our website for more details.")
-    score = es.scan_email(benign)["score"]
+    score = es.scan_email(benign)["risk_score"]
     if score > 40:
         failures.append(f"harmless words scored {score} (expected low or lower)")
     return failures
@@ -537,7 +537,7 @@ def test_job_scam_calibration():
     for label, text in SCAM_VARIANTS:
         payload = es_scan(text)
         feats = {f["fid"] for f in payload["features"]}
-        score = payload["score"]
+        score = payload["risk_score"]
         if score < 61:
             failures.append(f"[{label}] score {score} (expected high/very_high); "
                             f"indicators={payload['indicators']}")
@@ -546,7 +546,7 @@ def test_job_scam_calibration():
 
     for label, text in LEGIT_INTERNSHIPS:
         payload = es_scan(text)
-        score = payload["score"]
+        score = payload["risk_score"]
         if score > 40:
             failures.append(f"[{label}] legit internship scored {score} "
                             f"(expected low or lower)")
@@ -554,6 +554,19 @@ def test_job_scam_calibration():
         for fid in ("job_offer_fee", "offer_loss_threat"):
             if fid in feats:
                 failures.append(f"[{label}] legit email fired {fid}")
+    return failures
+
+
+def test_safe_email_has_high_trust_score():
+    failures = []
+    safe_sample = "From: hr@trusted.com\nSubject: Meeting\nHi team, let us meet tomorrow at 10am."
+    result = es_scan(safe_sample)
+    if result["score"] < 80:
+        failures.append(f"Safe email trust score was {result['score']} (expected >= 80)")
+    if result["risk_score"] > 20:
+        failures.append(f"Safe email risk score was {result['risk_score']} (expected <= 20)")
+    if result["status"] != "safe":
+        failures.append(f"Safe email status was {result['status']} (expected 'safe')")
     return failures
 
 
@@ -571,13 +584,16 @@ def run_checks(verbose=True):
     for sid, expected, mode, _, text in SAMPLES:
         payload = scan_email(text)
         payloads[sid] = payload
-        score = payload["score"]
+        score = payload["risk_score"]
+        trust_score = payload["score"]
+        if trust_score != max(0, min(100, 100 - score)):
+            failures.append(f"[{sid}] trust score {trust_score} != 100 - risk_score {score}")
         ok, b = _check_band(sid, score, expected, mode)
         results.append((sid, expected, mode, score, b, ok))
 
         structural_ok = True
         structural_issues = []
-        for key in ("score", "status", "category", "risk_label", "risk_emoji",
+        for key in ("score", "risk_score", "status", "category", "risk_label", "risk_emoji",
                     "reasons", "indicators", "recommendation", "processing_time_ms",
                     "confidence", "features"):
             if key not in payload:
@@ -604,7 +620,7 @@ def run_checks(verbose=True):
 
     # Relative ordering constraints - these are the behavioral guarantees.
     def s(x):
-        return payloads[x]["score"]
+        return payloads[x]["risk_score"]
 
     order_checks = [
         ("B < C (legit notice stays below generic verification scam)", s("B") < s("C"), s("B"), s("C")),
@@ -649,6 +665,7 @@ def main():
         ("test_normalization", test_normalization),
         ("test_strong_overrides_harmless_words", test_strong_overrides_harmless_words),
         ("test_job_scam_calibration", test_job_scam_calibration),
+        ("test_safe_email_has_high_trust_score", test_safe_email_has_high_trust_score),
     ]
     if not table_only:
         print("\nUnit checks:")

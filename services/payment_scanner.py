@@ -46,6 +46,8 @@ score (0-100 trust) is derived from risk as 100 - risk so the rest of TrustLens
 result type and confidence explicitly.
 """
 
+from __future__ import annotations
+
 import concurrent.futures
 import os
 import re
@@ -914,6 +916,8 @@ def _qr_analysis(image_path: str) -> dict:
         payloads = decode_qr(image_path)
     except Exception:  # noqa: BLE001
         logger.info("QR detection: no QR code found")
+        return {"detected": False}
+    if not payloads:
         return {"detected": False}
     raw = _clean_payload(payloads[0])
     low = raw.lower()

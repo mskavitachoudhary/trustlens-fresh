@@ -1283,8 +1283,12 @@ def scan_email(content: str, trace: bool = False) -> dict:
     features = [f.to_dict() for f in collector.features.values()]
     processing_ms = int((time.perf_counter() - start) * 1000)
 
+    trust_score = max(0, min(100, 100 - risk))
+
     result = {
-        "score": risk,
+        "score": trust_score,
+        "trust_score": trust_score,
+        "risk_score": risk,
         "status": cat["status"],
         "category": cat["category"],
         "risk_label": cat["label"],

@@ -51,6 +51,10 @@ from services.payment_scanner import _SIGNAL_DEFS, scan_payment_screenshot  # no
 def _font():
     for path in (
         os.environ.get("TRUSTLENS_TEST_FONT", ""),
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         r"C:\Windows\Fonts\arial.ttf",
         r"C:\Windows\Fonts\segoeui.ttf",
     ):

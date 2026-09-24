@@ -62,11 +62,11 @@ function renderResult(data) {
         '<p class="rec-box ' + (data.status === "safe" ? "rec-safe" : data.status === "warning" ? "rec-warning" : "rec-dangerous") + '" id="recommendation"></p>' +
         '<div class="fw-bold small text-uppercase text-dim-c mb-2">Why this score</div>' +
         '<ul class="reason-list" id="reasons"></ul>' +
-        '<p class="text-dim-c small mt-3 mb-0">Confidence: ' + (data.confidence !== undefined ? data.confidence + '%' : 'n/a') + ' &middot; Processing time: ' + data.processing_time_ms + ' ms</p>' +
+        '<p class="text-dim-c small mt-3 mb-0">Risk: ' + (data.risk_score !== undefined ? data.risk_score : 100 - data.score) + '/100 &middot; Confidence: ' + (data.confidence !== undefined ? data.confidence + '%' : 'n/a') + ' &middot; Processing time: ' + data.processing_time_ms + ' ms</p>' +
       '</div>' +
     '</div>';
 
-  TrustLens.renderRiskGauge(document.getElementById("gauge"), data.score, "RISK SCORE");
+  TrustLens.renderGauge(document.getElementById("gauge"), data.score);
   document.getElementById("statusPill").innerHTML = TrustLens.renderRiskPill(data.status, label, data.risk_emoji);
 
   const rec = document.getElementById("recommendation");
