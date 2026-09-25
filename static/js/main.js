@@ -114,8 +114,10 @@
       box.classList.add("glass", "p-4");
       box.innerHTML =
         '<div class="d-flex align-items-start gap-3">' +
-        '<span style="font-size:1.6rem;color:var(--red)">&#9888;</span>' +
-        '<div><h5 class="mb-1" style="color:var(--red)">Scan error</h5>' +
+        '<span class="text-danger flex-shrink-0" style="margin-top:2px;">' +
+        '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+        '</span>' +
+        '<div><h5 class="mb-1" style="color:var(--trust-danger)">Scan error</h5>' +
         '<p class="text-muted-c mb-0">' + escapeHtml(message) + "</p></div></div>";
       box.scrollIntoView({ behavior: "smooth", block: "nearest" });
     },
@@ -225,7 +227,9 @@
       const banner = document.createElement("div");
       banner.className = "blacklist-banner";
       banner.innerHTML =
-        '<div class="blacklist-banner-icon">&#128308;</div>' +
+        '<div class="blacklist-banner-icon">' +
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>' +
+        '</div>' +
         '<div>' +
         '<div class="blacklist-banner-title">BLACKLISTED / UNSAFE</div>' +
         '<div class="blacklist-banner-text">' +
@@ -248,8 +252,20 @@
     const input = zone.querySelector('input[type="file"]');
     const label = zone.querySelector(".dz-filename");
 
+    function formatFileLabel(files) {
+      if (!files || !files.length) return "No file chosen";
+      if (files.length === 1) {
+        const f = files[0];
+        const sizeStr = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + " MB" : (f.size / 1024).toFixed(0) + " KB";
+        return f.name + " (" + sizeStr + ")";
+      }
+      return files.length + " files selected";
+    }
+
     if (input) {
-      zone.addEventListener("click", function () { input.click(); });
+      zone.addEventListener("click", function (e) {
+        if (e.target !== input) input.click();
+      });
       zone.addEventListener("dragover", function (e) {
         e.preventDefault();
         zone.classList.add("dragover");
@@ -260,11 +276,11 @@
         zone.classList.remove("dragover");
         if (e.dataTransfer.files.length) {
           input.files = e.dataTransfer.files;
-          if (label) label.textContent = e.dataTransfer.files[0].name;
+          if (label) label.textContent = formatFileLabel(e.dataTransfer.files);
         }
       });
       input.addEventListener("change", function () {
-        if (label && input.files.length) label.textContent = input.files[0].name;
+        if (label && input.files.length) label.textContent = formatFileLabel(input.files);
       });
     }
   });

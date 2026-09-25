@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/icons.html" import icon %}
 
 {% block title %}Claim Checker - TrustLens{% endblock %}
 
@@ -6,7 +7,7 @@
 <section class="scanner-shell">
   <div class="container" style="max-width: 760px;">
     <div class="text-center mb-4 reveal">
-      <span class="hero-badge mb-3">&#128269; CLAIM CHECKER</span>
+      <span class="hero-badge mb-3">{{ icon('scale', size=14) }} TRUTH &amp; CLAIM CHECKER</span>
       <h1 class="mt-3">Fact-check a <span class="text-gradient">claim</span></h1>
       <p class="text-muted-c mx-auto" style="max-width:560px;">Paste a viral statement, news snippet or product claim. The checker matches it against a built-in evidence base and always separates "false" from "we could not verify it".</p>
     </div>
@@ -29,17 +30,6 @@
 {% endblock %}
 
 {% block scripts %}
-<style>
-  .verdict-pill { display: inline-block; padding: 0.45rem 1.1rem; border-radius: 999px;
-    font-size: 0.85rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
-  .v-supported { background: rgba(45, 212, 167, 0.14); color: var(--green); border: 1px solid rgba(45, 212, 167, 0.35); }
-  .v-misleading, .v-unsupported { background: rgba(245, 181, 68, 0.14); color: var(--yellow); border: 1px solid rgba(245, 181, 68, 0.35); }
-  .v-false { background: rgba(255, 95, 109, 0.14); color: var(--red); border: 1px solid rgba(255, 95, 109, 0.35); }
-  .v-unverifiable, .v-insufficient { background: rgba(56, 214, 255, 0.14); color: var(--accent-2); border: 1px solid rgba(56, 214, 255, 0.35); }
-  .src-chip { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 999px;
-    font-size: 0.78rem; font-weight: 600; margin: 0 0.4rem 0.4rem 0;
-    background: rgba(124, 92, 255, 0.12); color: var(--accent-1); }
-</style>
 <script>
 document.getElementById("scanForm").addEventListener("submit", function (e) {
   e.preventDefault();

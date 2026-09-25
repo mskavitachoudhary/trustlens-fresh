@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/icons.html" import icon %}
 
 {% block title %}Product Scanner - TrustLens{% endblock %}
 
@@ -6,7 +7,7 @@
 <section class="scanner-shell">
   <div class="container" style="max-width: 880px;">
     <div class="text-center mb-4 reveal">
-      <span class="hero-badge mb-3">&#128722; PRODUCT INGREDIENT SCANNER</span>
+      <span class="hero-badge mb-3">{{ icon('flask', size=14) }} PRODUCT INGREDIENT SCANNER</span>
       <h1 class="mt-3">Check your <span class="text-gradient">ingredients</span></h1>
       <p class="text-muted-c mx-auto" style="max-width:560px;">Paste an ingredient list or upload a product label image. The label is matched against the verified TrustLens product database, then every ingredient is cross-checked against the reference ingredient database. The safety score is built from what is actually detected &mdash; an unknown ingredient is never treated as a danger by default.</p>
     </div>
@@ -20,7 +21,7 @@
         <div class="mb-3">
           <label class="form-label-c">Or upload product label image(s)</label>
           <div class="drop-zone">
-            <div class="dz-icon">&#128247;</div>
+            <div class="dz-icon">{{ icon('flask', size=32, stroke_width=1.5) }}</div>
             <div class="dz-text">Drop label photos here or click to browse<br><span class="text-dim-c small">Front label, back label, ingredient panel &mdash; multiple images supported</span></div>
             <div class="dz-filename text-dim-c small mt-2"></div>
             <input type="file" id="ingredient_image" name="ingredient_image" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" multiple hidden>
