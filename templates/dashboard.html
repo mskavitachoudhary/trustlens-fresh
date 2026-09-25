@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/icons.html" import icon %}
 {% from "components/report_status.html" import status_pill %}
 
 {% block title %}Dashboard - TrustLens{% endblock %}
@@ -8,11 +9,11 @@
   <div class="container">
     <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4 reveal">
       <div>
-        <span class="hero-badge mb-2">DASHBOARD</span>
+        <span class="hero-badge mb-2">{{ icon('shield', size=14) }} DASHBOARD</span>
         <h1 class="mt-2 mb-1">Welcome back, <span class="text-gradient">{{ user.full_name }}</span></h1>
         <p class="text-muted-c mb-0">Here is what the TrustLens community has verified.</p>
       </div>
-      <a href="{{ url_for('scanners.website_scanner_page') }}" class="btn btn-trust">&#128270; New Scan</a>
+      <a href="{{ url_for('scanners.website_scanner_page') }}" class="btn btn-trust">{{ icon('search', size=16) }} New Scan</a>
     </div>
 
     <div class="row g-4 mb-4">
@@ -62,7 +63,7 @@
             </div>
           {% else %}
             <div class="text-center py-5">
-              <div class="fs-1 mb-2">&#128270;</div>
+              <div class="mb-2 text-dim-c">{{ icon('search', size=36) }}</div>
               <p class="text-muted-c mb-3">No scans yet. Run your first website scan!</p>
               <a href="{{ url_for('scanners.website_scanner_page') }}" class="btn btn-trust btn-sm-trust">Scan a Website</a>
             </div>
@@ -74,12 +75,12 @@
         <div class="glass p-4 h-100">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0">My scam reports</h5>
-            <a class="btn btn-ghost btn-sm-trust" href="{{ url_for('reports.list_reports') }}">&#9998; New report</a>
+            <a class="btn btn-ghost btn-sm-trust" href="{{ url_for('reports.list_reports') }}">{{ icon('file-text', size=14) }} New report</a>
           </div>
 
           {% if new_updates %}
             <div class="alert alert-trust alert-info d-flex align-items-center gap-2 mb-3" role="alert">
-              <span style="font-size:1.2rem;">&#128276;</span>
+              <span class="flex-shrink-0">{{ icon('alert', size=18) }}</span>
               <span>You have {{ new_updates }} new update{% if new_updates != 1 %}s{% endif %} on your scam report{% if new_updates != 1 %}s{% endif %}.</span>
             </div>
           {% endif %}
@@ -104,7 +105,7 @@
             {% endfor %}
           {% else %}
             <div class="text-center py-5">
-              <div class="fs-1 mb-2">&#128276;</div>
+              <div class="mb-2 text-dim-c">{{ icon('file-text', size=36) }}</div>
               <p class="text-muted-c mb-3">You have not submitted any scam reports yet.</p>
               <a href="{{ url_for('reports.list_reports') }}" class="btn btn-danger-trust btn-sm-trust">Report a Scam</a>
             </div>

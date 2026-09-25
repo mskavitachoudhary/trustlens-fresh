@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/icons.html" import icon %}
 
 {% block title %}Report a Scam - TrustLens{% endblock %}
 
@@ -6,30 +7,30 @@
 <section class="scanner-shell">
   <div class="container">
     <div class="text-center mb-5 reveal" style="max-width:640px;margin-left:auto;margin-right:auto;">
-      <span class="hero-badge mb-3">&#9888; REPORT A SCAM</span>
+      <span class="hero-badge mb-3">{{ icon('alert', size=14) }} REPORT A SCAM</span>
       <h1 class="mt-3">Share your experience, <span class="text-gradient">confidentially</span></h1>
       <p class="text-muted-c mx-auto">Your report goes directly to the TrustLens safety team. It is <strong>never published</strong> and only you and our admins can see it. When an admin updates your report you will get an email, and the update appears in your dashboard.</p>
-      <button type="button" class="btn btn-danger-trust mt-3" data-bs-toggle="modal" data-bs-target="#reportModal">&#9998; Submit a Report</button>
+      <button type="button" class="btn btn-danger-trust mt-3" data-bs-toggle="modal" data-bs-target="#reportModal">{{ icon('file-text', size=16) }} Submit a Report</button>
     </div>
 
     <div class="row g-4 justify-content-center reveal reveal-delay-1" style="max-width:820px;margin-left:auto;margin-right:auto;">
       <div class="col-md-4">
         <div class="glass-soft p-4 h-100 text-center">
-          <div class="fs-2 mb-2">&#128274;</div>
+          <div class="mb-2 text-safe" style="display:flex;justify-content:center;">{{ icon('shield', size=28, stroke_width=2) }}</div>
           <h6 class="mb-1">Private by default</h6>
           <p class="text-dim-c small mb-0">Reports are only visible to you and the TrustLens admin team.</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="glass-soft p-4 h-100 text-center">
-          <div class="fs-2 mb-2">&#128231;</div>
+          <div class="mb-2" style="display:flex;justify-content:center;color:var(--accent-primary);">{{ icon('mail', size=28, stroke_width=2) }}</div>
           <h6 class="mb-1">Email updates</h6>
           <p class="text-dim-c small mb-0">Get notified whenever an admin replies to your report.</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="glass-soft p-4 h-100 text-center">
-          <div class="fs-2 mb-2">&#128269;</div>
+          <div class="mb-2" style="display:flex;justify-content:center;color:var(--trust-warning);">{{ icon('search', size=28, stroke_width=2) }}</div>
           <h6 class="mb-1">Reviewed by humans</h6>
           <p class="text-dim-c small mb-0">A TrustLens admin reviews every submission and responds directly.</p>
         </div>
@@ -43,10 +44,10 @@
 <!-- Report modal -->
 <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content" style="background:#0b0d1c;border:1px solid var(--border);border-radius:var(--radius);">
-      <div class="modal-header" style="border-bottom-color:var(--border-soft);">
+    <div class="modal-content glass" style="border:1px solid var(--border-color);border-radius:var(--radius);">
+      <div class="modal-header" style="border-bottom-color:var(--border-subtle);">
         <h5 class="modal-title" id="reportModalLabel">Submit a scam report</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="reportForm">

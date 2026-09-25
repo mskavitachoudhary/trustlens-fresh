@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "components/icons.html" import icon %}
 
 {% block title %}Admin Overview - TrustLens{% endblock %}
 
@@ -13,16 +14,16 @@
         <h1 class="mb-4">Overview</h1>
         <div class="row g-4 mb-4">
           {% set cards = [
-            (counts.total_scans, 'Total Scans', '&#128269;', 'var(--accent)'),
-            (counts.dangerous_scans, 'Dangerous', '&#9888;', 'var(--red)'),
-            (report_stats['new'], 'New Reports', '&#128276;', 'var(--yellow)'),
-            (unread_messages, 'Unread Messages', '&#128231;', 'var(--accent-2)'),
-            (counts.users, 'Users', '&#128101;', 'var(--green)')
+            (counts.total_scans, 'Total Scans', 'search', 'var(--accent-primary)'),
+            (counts.dangerous_scans, 'Dangerous', 'alert', 'var(--trust-danger)'),
+            (report_stats['new'], 'New Reports', 'file-text', 'var(--trust-warning)'),
+            (unread_messages, 'Unread Messages', 'mail', 'var(--accent-primary)'),
+            (counts.users, 'Users', 'users', 'var(--trust-safe)')
           ] %}
-          {% for num, label, icon, color in cards %}
+          {% for num, label, icon_name, color in cards %}
             <div class="col-md-4">
               <div class="glass card-hover p-4">
-                <div class="fs-2 mb-2" style="color:{{ color }};">{{ icon|safe }}</div>
+                <div class="mb-2" style="color:{{ color }};">{{ icon(icon_name, size=24, stroke_width=2) }}</div>
                 <div class="fs-3 fw-bold">{{ num }}</div>
                 <div class="text-dim-c small">{{ label }}</div>
               </div>

@@ -891,18 +891,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Tables ------------------------------------------------------------- */
-.table-trust { color: var(--text-main); }
+.table-trust { color: var(--text-primary); }
 .table-trust thead th {
-  color: var(--text-dim);
+  background: var(--bg-surface-elevated);
+  color: var(--text-secondary);
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  border-bottom-color: var(--border);
+  border-bottom: 1px solid var(--border-color);
   font-weight: 700;
 }
-.table-trust td { border-bottom-color: var(--border-soft); vertical-align: middle; }
-.table-trust tbody tr { transition: background 0.2s ease; }
-.table-trust tbody tr:hover { background: rgba(124, 92, 255, 0.07); }
+.table-trust td {
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+  color: var(--text-primary);
+}
+.table-trust tbody tr { transition: background 0.15s ease; }
+.table-trust tbody tr:hover { background: var(--border-subtle); }
+
+/* Modal theme adaptation */
+.modal-content {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%);
+}
+[data-theme="light"] .btn-close {
+  filter: none;
+}
 
 /* ---- Auth pages --------------------------------------------------------- */
 .auth-shell { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 6.5rem 1rem 3rem; }
@@ -957,19 +975,26 @@ h1, h2, h3, h4, h5, h6 {
 .admin-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  color: var(--text-muted);
+  gap: 0.6rem;
+  color: var(--text-secondary);
   font-weight: 600;
-  font-size: 0.92rem;
-  padding: 0.65rem 1rem;
-  border-radius: 10px;
-  margin-bottom: 0.3rem;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-size: 0.88rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-xs);
+  margin-bottom: 0.2rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.admin-nav-link:hover, .admin-nav-link.active {
-  background: rgba(124, 92, 255, 0.16);
-  color: var(--text-main);
+.admin-nav-link:hover {
+  background: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.admin-nav-link.active {
+  background: var(--accent-focus);
+  color: var(--accent-primary);
+  font-weight: 700;
 }
 
 /* ---- Misc --------------------------------------------------------------- */
