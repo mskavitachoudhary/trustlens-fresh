@@ -105,105 +105,213 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function () {
-  const CHART_OPTS = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: "#9aa3c7", font: { family: "Segoe UI" } } } }
-  };
-  const gridColor = "rgba(255,255,255,0.07)";
+  const FONT_FAMILY = '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif';
+
+  function getThemeTokens() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    const style = getComputedStyle(document.documentElement);
+    const borderSubtle = style.getPropertyValue("--border-subtle").trim() || (isDark ? "#27272a" : "#e5e7eb");
+    const textMuted = style.getPropertyValue("--text-muted").trim() || (isDark ? "#71717a" : "#9ca3af");
+    const textSecondary = style.getPropertyValue("--text-secondary").trim() || (isDark ? "#a1a1aa" : "#4b5563");
+    const textPrimary = style.getPropertyValue("--text-primary").trim() || (isDark ? "#f4f4f5" : "#111827");
+    const bgSurface = style.getPropertyValue("--bg-surface").trim() || (isDark ? "#121215" : "#ffffff");
+    const accent = style.getPropertyValue("--accent").trim() || (isDark ? "#f4f4f5" : "#0f172a");
+    const accentFill = isDark ? "rgba(244, 244, 245, 0.08)" : "rgba(15, 23, 42, 0.06)";
+    const signalSafe = style.getPropertyValue("--signal-safe").trim() || (isDark ? "#34d399" : "#047857");
+    const signalWarning = style.getPropertyValue("--signal-warning").trim() || (isDark ? "#fbbf24" : "#b45309");
+    const signalDanger = style.getPropertyValue("--signal-danger").trim() || (isDark ? "#f87171" : "#b91c1c");
+
+    return {
+      isDark,
+      borderSubtle,
+      textMuted,
+      textSecondary,
+      textPrimary,
+      bgSurface,
+      accent,
+      accentFill,
+      signalSafe,
+      signalWarning,
+      signalDanger
+    };
+  }
+
+  const chartEntries = [];
+
+  function updateChartThemes() {
+    const t = getThemeTokens();
+    chartEntries.forEach(function (entry) {
+      const chart = entry.chart;
+      const type = entry.type;
+
+      if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
+        chart.options.plugins.legend.labels.color = t.textSecondary;
+      }
+
+      if (chart.options.scales) {
+        if (chart.options.scales.x) {
+          if (chart.options.scales.x.ticks) chart.options.scales.x.ticks.color = t.textMuted;
+          if (chart.options.scales.x.grid) chart.options.scales.x.grid.color = t.borderSubtle;
+        }
+        if (chart.options.scales.y) {
+          if (chart.options.scales.y.ticks) chart.options.scales.y.ticks.color = t.textMuted;
+          if (chart.options.scales.y.grid) chart.options.scales.y.grid.color = t.borderSubtle;
+        }
+      }
+
+      if (type === "line") {
+        chart.data.datasets.forEach(function (ds) {
+          ds.borderColor = t.accent;
+          ds.backgroundColor = t.accentFill;
+          ds.pointBackgroundColor = t.accent;
+        });
+      } else if (type === "doughnut") {
+        chart.data.datasets.forEach(function (ds) {
+          ds.backgroundColor = [t.signalSafe, t.signalWarning, t.signalDanger];
+          ds.borderColor = t.bgSurface;
+        });
+      } else if (type === "bar") {
+        chart.data.datasets.forEach(function (ds) {
+          ds.backgroundColor = t.isDark ? "rgba(244, 244, 245, 0.65)" : "rgba(15, 23, 42, 0.65)";
+        });
+      }
+
+      chart.update();
+    });
+  }
+
+  if (window.MutationObserver) {
+    const themeObserver = new MutationObserver(function () {
+      updateChartThemes();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  }
 
   fetch("/admin/api/analytics", { headers: { "X-Requested-With": "XMLHttpRequest" } })
     .then(function (res) { return res.json(); })
     .then(function (data) {
       if (!data.success) return;
+      const t = getThemeTokens();
+
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: t.textSecondary,
+              font: { family: FONT_FAMILY, size: 12 }
+            }
+          }
+        }
+      };
 
       /* ---- Scan volume line chart ---- */
       const volume = document.getElementById("scanVolumeChart");
       if (volume) {
-        new Chart(volume, {
+        const volumeChart = new Chart(volume, {
           type: "line",
           data: {
             labels: data.scan_volume.map(function (d) { return d.date.slice(5); }),
             datasets: [{
               label: "Scans",
               data: data.scan_volume.map(function (d) { return d.count; }),
-              borderColor: "#7c5cff",
-              backgroundColor: "rgba(124,92,255,0.18)",
+              borderColor: t.accent,
+              backgroundColor: t.accentFill,
               fill: true,
               tension: 0.35,
-              pointBackgroundColor: "#38d6ff"
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: t.accent
             }]
           },
-          options: Object.assign({}, CHART_OPTS, {
-            scales: { x: { ticks: { color: "#6b74a0" }, grid: { color: gridColor } },
-                      y: { ticks: { color: "#6b74a0", precision: 0 }, grid: { color: gridColor }, beginAtZero: true } }
+          options: Object.assign({}, commonOptions, {
+            scales: {
+              x: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 } }, grid: { color: t.borderSubtle } },
+              y: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 }, precision: 0 }, grid: { color: t.borderSubtle }, beginAtZero: true }
+            }
           })
         });
+        chartEntries.push({ chart: volumeChart, type: "line" });
       }
 
       /* ---- Risk distribution doughnut ---- */
       const risk = document.getElementById("riskChart");
       if (risk) {
-        new Chart(risk, {
+        const riskChart = new Chart(risk, {
           type: "doughnut",
           data: {
             labels: ["Safe", "Warning", "Dangerous"],
             datasets: [{
               data: [data.risk.safe, data.risk.warning, data.risk.dangerous],
-              backgroundColor: ["#2dd4a7", "#f5b544", "#ff5f6d"],
-              borderColor: "#0b0d1c",
-              borderWidth: 3
+              backgroundColor: [t.signalSafe, t.signalWarning, t.signalDanger],
+              borderColor: t.bgSurface,
+              borderWidth: 2
             }]
           },
-          options: CHART_OPTS
+          options: commonOptions
         });
+        chartEntries.push({ chart: riskChart, type: "doughnut" });
       }
 
       /* ---- Most common fraud types bar chart ---- */
       const fraud = document.getElementById("fraudTypesChart");
       if (fraud) {
         const items = data.fraud_types.slice(0, 8);
-        new Chart(fraud, {
+        const fraudChart = new Chart(fraud, {
           type: "bar",
           data: {
             labels: items.map(function (f) { return f.label; }),
             datasets: [{
               label: "Reports & detections",
               data: items.map(function (f) { return f.count; }),
-              backgroundColor: "rgba(56,214,255,0.75)",
-              borderRadius: 6
+              backgroundColor: t.isDark ? "rgba(244, 244, 245, 0.65)" : "rgba(15, 23, 42, 0.65)",
+              borderRadius: 4
             }]
           },
-          options: Object.assign({}, CHART_OPTS, {
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (c) { return c.parsed.y + " case(s)"; } } } },
-            scales: { x: { ticks: { color: "#9aa3c7" }, grid: { color: gridColor } },
-                      y: { ticks: { color: "#6b74a0", precision: 0 }, grid: { color: gridColor }, beginAtZero: true } }
+          options: Object.assign({}, commonOptions, {
+            plugins: {
+              legend: { display: false },
+              tooltip: { callbacks: { label: function (c) { return c.parsed.y + " case(s)"; } } }
+            },
+            scales: {
+              x: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 } }, grid: { color: t.borderSubtle } },
+              y: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 }, precision: 0 }, grid: { color: t.borderSubtle }, beginAtZero: true }
+            }
           })
         });
+        chartEntries.push({ chart: fraudChart, type: "bar" });
       }
 
       /* ---- User growth line chart ---- */
       const users = document.getElementById("userGrowthChart");
       if (users) {
-        new Chart(users, {
+        const usersChart = new Chart(users, {
           type: "line",
           data: {
             labels: data.user_growth.map(function (d) { return d.date.slice(5); }),
             datasets: [{
               label: "New users",
               data: data.user_growth.map(function (d) { return d.count; }),
-              borderColor: "#2dd4a7",
-              backgroundColor: "rgba(45,212,167,0.15)",
+              borderColor: t.accent,
+              backgroundColor: t.accentFill,
               fill: true,
               tension: 0.35,
-              pointBackgroundColor: "#2dd4a7"
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: t.accent
             }]
           },
-          options: Object.assign({}, CHART_OPTS, {
-            scales: { x: { ticks: { color: "#6b74a0" }, grid: { color: gridColor } },
-                      y: { ticks: { color: "#6b74a0", precision: 0 }, grid: { color: gridColor }, beginAtZero: true } }
+          options: Object.assign({}, commonOptions, {
+            scales: {
+              x: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 } }, grid: { color: t.borderSubtle } },
+              y: { ticks: { color: t.textMuted, font: { family: FONT_FAMILY, size: 11 }, precision: 0 }, grid: { color: t.borderSubtle }, beginAtZero: true }
+            }
           })
         });
+        chartEntries.push({ chart: usersChart, type: "line" });
       }
     })
     .catch(function () {
