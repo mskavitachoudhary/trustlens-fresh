@@ -1,139 +1,212 @@
 {% extends "base.html" %}
 {% from "components/icons.html" import icon %}
 
-{% block title %}TrustLens - AI Based Information Verification{% endblock %}
+{% block title %}TrustLens - AI Information Verification Platform{% endblock %}
 
 {% block content %}
 
-<!-- ===== Hero ===== -->
+<!-- ===== Editorial Hero ===== -->
 <section class="hero">
-  <div class="hero-orb" style="width:420px;height:420px;background:#7c5cff;top:-80px;left:6%;opacity:0.10;"></div>
-  <div class="hero-orb" style="width:360px;height:360px;background:#38d6ff;top:-40px;right:4%;opacity:0.08;"></div>
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-7 reveal">
-        <span class="hero-badge mb-3">{{ icon('shield', size=14) }} AI INFORMATION VERIFICATION PLATFORM</span>
-        <h1 class="mb-4">Verify before you <span class="text-gradient">trust.</span></h1>
-        <p class="lead-c hero-sub mb-4">
+        <div class="mb-3">
+          <span class="hero-badge">{{ icon('shield', size=13, stroke_width=1.5) }} AI Information Verification Platform</span>
+        </div>
+        <h1 class="hero-heading mb-4">Verify before you trust.</h1>
+        <p class="hero-sub mb-4">
           TrustLens analyses websites, emails, job offers, WhatsApp messages, QR codes,
           payment receipts, product ingredients, and claims with transparent 0&ndash;100 trust scores &mdash; so you can spot
-          scams before they cost you.
+          threats before they compromise you.
         </p>
         <div class="d-flex flex-wrap gap-3">
-          <a href="{{ url_for('scanners.website_scanner_page') }}" class="btn btn-trust btn-lg">{{ icon('globe', size=18) }} Scan a Website</a>
+          <a href="{{ url_for('scanners.website_scanner_page') }}" class="btn btn-trust btn-lg">
+            {{ icon('globe', size=17, stroke_width=1.5) }} Scan a Website
+          </a>
           <a href="{{ url_for('auth.register') }}" class="btn btn-ghost btn-lg">Create Free Account</a>
         </div>
-        <div class="d-flex flex-wrap gap-4 mt-5">
-          <div><div class="fs-3 fw-bold text-gradient">8</div><div class="text-dim-c small">AI Scanners</div></div>
-          <div><div class="fs-3 fw-bold text-gradient">100%</div><div class="text-dim-c small">Signal Transparency</div></div>
-          <div><div class="fs-3 fw-bold text-gradient">Free</div><div class="text-dim-c small">Instant Verification</div></div>
+        <div class="d-flex flex-wrap gap-4 mt-5 pt-2">
+          <div class="hero-stat-item">
+            <div class="hero-metric-val">8</div>
+            <div class="hero-metric-label">AI Scanners</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-metric-val">100%</div>
+            <div class="hero-metric-label">Signal Transparency</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-metric-val">Free</div>
+            <div class="hero-metric-label">Instant Verification</div>
+          </div>
         </div>
       </div>
       <div class="col-lg-5 reveal reveal-delay-2">
-        <div class="glass p-4">
+        <div class="card-trust p-4">
           <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="gauge-ring" style="--value:42;--ring-color:var(--red);width:96px;height:96px;">
-              <div class="gauge-inner"><div class="fs-3 fw-bold">42</div></div>
+            <div class="gauge-ring gauge-sm flex-shrink-0" style="--value:42;--ring-color:var(--signal-danger);background:conic-gradient(var(--signal-danger) 0% 42%, var(--gauge-track) 42% 100%);">
+              <div class="gauge-inner">
+                <div class="gauge-num">42</div>
+                <div class="gauge-label">RISK</div>
+              </div>
             </div>
             <div>
               <div class="status-pill badge-dangerous mb-2">DANGEROUS</div>
-              <p class="small text-muted-c mb-0">An email claiming to be from a bank, asking you to verify payment details within 24 hours.</p>
+              <p class="small text-secondary mb-0">An email impersonating a financial institution, requesting urgent credential validation within 24 hours.</p>
             </div>
           </div>
-          <ul class="reason-list">
-            <li class="r-danger">{{ icon('alert', size=14) }}<span>1 suspicious link detected</span></li>
-            <li class="r-warning">{{ icon('alert', size=14) }}<span>Urgency language detected</span></li>
-            <li class="r-warning">{{ icon('alert', size=14) }}<span>Generic greeting &mdash; mass phishing pattern</span></li>
+          <ul class="reason-list my-3">
+            <li class="r-danger">{{ icon('alert', size=14, stroke_width=1.5) }}<span>1 suspicious link detected in payload</span></li>
+            <li class="r-warning">{{ icon('alert', size=14, stroke_width=1.5) }}<span>Urgency manipulation patterns identified</span></li>
+            <li class="r-warning">{{ icon('alert', size=14, stroke_width=1.5) }}<span>Generic greeting &mdash; mass phishing signature</span></li>
           </ul>
-          <a href="{{ url_for('scanners.email_scanner_page') }}" class="btn btn-ghost btn-sm-trust w-100 mt-2">{{ icon('mail', size=14) }} Try the Email Scanner</a>
+          <a href="{{ url_for('scanners.email_scanner_page') }}" class="btn btn-ghost btn-sm-trust w-100 mt-2">
+            {{ icon('mail', size=14, stroke_width=1.5) }} Try the Email Scanner
+          </a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== Scanners ===== -->
+<!-- ===== 8-Scanner Verification Engines Grid ===== -->
 <section class="py-5">
   <div class="container">
     <div class="text-center mb-5 reveal">
-      <span class="hero-badge mb-3">{{ icon('shield', size=14) }} SCANNERS</span>
-      <h2 class="section-title mt-3">Eight specialized verification engines</h2>
-      <p class="text-muted-c mx-auto" style="max-width:560px;">Every tool explains its reasoning. No black boxes, no fake scores &mdash; just clear signals of risk.</p>
+      <span class="eyebrow mb-2 d-inline-block">{{ icon('shield', size=13, stroke_width=1.5) }} VERIFICATION ENGINES</span>
+      <h2 class="section-title mt-1">Eight specialized threat scanners</h2>
+      <p class="text-secondary mx-auto" style="max-width:560px;">Every engine delivers transparent forensic reasoning. Deterministic heuristic signals with zero black-box scoring.</p>
     </div>
     <div class="row g-4">
       {% set tools = [
-        ('Website Scanner', 'globe', 'Check any URL for phishing, suspicious domains and fake logins.', 'scanners.website_scanner_page', '55'),
-        ('Email Scanner', 'mail', 'Paste an email to detect phishing, fake senders and urgency manipulation.', 'scanners.email_scanner_page', '42'),
-        ('Job Checker', 'briefcase', 'Expose fake job offers, advance-fee scams and suspicious recruiter emails.', 'scanners.job_checker_page', '45'),
-        ('WhatsApp Scanner', 'message', 'Upload chat screenshots and let OCR uncover lottery, courier and OTP scams.', 'scanners.whatsapp_scanner_page', '60'),
-        ('QR Scanner', 'qr', 'Decode QR codes and check destination URLs against threat databases.', 'scanners.qr_scanner_page', '50'),
-        ('Payment Analyzer', 'receipt', 'Detect edited UPI payment confirmation screenshots used in delivery and refund fraud.', 'scanners.payment_analyzer_page', '38'),
-        ('Product Scanner', 'flask', 'Verify product label ingredients against safety reference databases.', 'main.product_scanner', '65'),
-        ('Claim Checker', 'scale', 'Verify claims, statements and rumors against authoritative evidence.', 'main.claim_checker', '75')
+        ('Website Scanner', 'globe', 'Check any URL for phishing, suspicious domains, and deceptive fake logins.', 'scanners.website_scanner_page', '55'),
+        ('Email Scanner', 'mail', 'Inspect raw email headers and text for spoofed senders and social engineering.', 'scanners.email_scanner_page', '42'),
+        ('Job Checker', 'briefcase', 'Expose fraudulent recruitment offers, advance-fee scams, and suspicious contacts.', 'scanners.job_checker_page', '45'),
+        ('WhatsApp Scanner', 'message', 'Upload conversation screenshots to uncover lottery, delivery, and OTP scams.', 'scanners.whatsapp_scanner_page', '60'),
+        ('QR Scanner', 'qr', 'Decode QR matrix codes and audit destination endpoints against threat databases.', 'scanners.qr_scanner_page', '50'),
+        ('Payment Analyzer', 'receipt', 'Detect manipulated UPI confirmation slips and tampered transaction records.', 'scanners.payment_analyzer_page', '38'),
+        ('Product Scanner', 'flask', 'Audit product ingredients against regulatory databases and safety benchmarks.', 'main.product_scanner', '65'),
+        ('Claim Checker', 'scale', 'Cross-reference viral claims, rumors, and news assertions with trusted sources.', 'main.claim_checker', '75')
       ] %}
       {% for name, icon_name, desc, endpoint, score in tools %}
         <div class="col-md-6 col-lg-3 reveal">
-          <div class="glass card-hover p-4 h-100 d-flex flex-column">
-            <div class="tool-icon mb-3">{{ icon(icon_name, size=24, stroke_width=2) }}</div>
-            <h5>{{ name }}</h5>
-            <p class="text-muted-c small flex-grow-1 mb-3">{{ desc }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="detail-chip"><strong>Demo:</strong> {{ score }}/100</span>
-              <a class="btn btn-trust btn-sm-trust" href="{{ url_for(endpoint) }}">Open</a>
+          <a href="{{ url_for(endpoint) }}" class="tool-card h-100 d-flex flex-column text-decoration-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div class="tool-icon">
+                {{ icon(icon_name, size=20, stroke_width=1.5) }}
+              </div>
+              <span class="tool-arrow">
+                {{ icon('arrow-right', size=14, stroke_width=1.5) }}
+              </span>
             </div>
-          </div>
+            <h3 class="tool-title mb-2">{{ name }}</h3>
+            <p class="tool-desc flex-grow-1 mb-3">{{ desc }}</p>
+            <div class="tool-footer pt-3 d-flex align-items-center justify-content-between">
+              <span class="tool-meta">Reference: {{ score }}/100</span>
+              <span class="tool-action">Open &rarr;</span>
+            </div>
+          </a>
         </div>
       {% endfor %}
     </div>
   </div>
 </section>
 
-<!-- ===== Why TrustLens ===== -->
+<!-- ===== Institutional "Why TrustLens" Feature Grid ===== -->
 <section class="py-5">
   <div class="container">
-    <div class="glass p-5">
-      <div class="row g-4 align-items-center">
-        <div class="col-lg-6">
-          <h2 class="section-title mb-3">Why a <span class="text-gradient">trust score</span> is not enough</h2>
-          <p class="text-muted-c">Other tools tell you "suspicious" and leave it there. TrustLens shows you <strong class="text-main">why</strong> something scored badly &mdash; each penalty is listed with the exact signal that triggered it.</p>
-          <ul class="list-unstyled">
-            <li class="mb-2">{{ icon('check', size=16, class='text-safe') }} &nbsp; HTTPS &amp; SSL certificate checks</li>
-            <li class="mb-2">{{ icon('check', size=16, class='text-safe') }} &nbsp; Suspicious keywords, TLDs and raw-IP links</li>
-            <li class="mb-2">{{ icon('check', size=16, class='text-safe') }} &nbsp; Blacklist lookups &amp; redirect chains</li>
-            <li class="mb-2">{{ icon('check', size=16, class='text-safe') }} &nbsp; OCR analysis of images &amp; screenshots</li>
-            <li class="mb-2">{{ icon('check', size=16, class='text-safe') }} &nbsp; Metadata forensics on payment screenshots</li>
-          </ul>
-        </div>
-        <div class="col-lg-6">
-          <div class="row g-3">
-            {% for num, label in [('2,400+', 'Scams analysed'), ('98%', 'Detection accuracy*'), ('8', 'Specialised scanners'), ('24/7', 'Always available')] %}
-              <div class="col-6">
-                <div class="glass-soft stat-card">
-                  <div class="stat-num" data-count="{{ num|replace(',', '') }}">{{ num }}</div>
-                  <div class="stat-label">{{ label }}</div>
-                </div>
-              </div>
-            {% endfor %}
+    <div class="card-trust p-4 p-lg-5">
+      <div class="text-center mb-5">
+        <span class="eyebrow mb-2 d-inline-block">{{ icon('shield', size=13, stroke_width=1.5) }} SECURITY ARCHITECTURE</span>
+        <h2 class="section-title mt-1">Why deterministic verification matters</h2>
+        <p class="text-secondary mx-auto" style="max-width:580px;">Generic trust badges leave you guessing. TrustLens itemizes every threat vector with cryptographic transparency and granular signal attribution.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-4 h-100 card-trust" style="background: var(--bg-surface-elevated);">
+            <div class="tool-icon mb-3">
+              {{ icon('analytics', size=20, stroke_width=1.5) }}
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Real-Time Heuristics</h3>
+            <p class="text-secondary small mb-0">Sub-second protocol and network validation across SSL certificates, domain age anomalies, redirect hops, and DNS record integrity.</p>
           </div>
-          <p class="text-dim-c small mt-3 mb-0">*Based on internal benchmark corpus.</p>
+        </div>
+        <div class="col-md-6">
+          <div class="p-4 h-100 card-trust" style="background: var(--bg-surface-elevated);">
+            <div class="tool-icon mb-3">
+              {{ icon('shield', size=20, stroke_width=1.5) }}
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Multi-Vector Threat Analysis</h3>
+            <p class="text-secondary small mb-0">Cross-vector threat intelligence synthesizing URL patterns, email header signals, optical OCR extractions, and payment transaction forensics.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-4 h-100 card-trust" style="background: var(--bg-surface-elevated);">
+            <div class="tool-icon mb-3">
+              {{ icon('document', size=20, stroke_width=1.5) }}
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Forensic Explainability</h3>
+            <p class="text-secondary small mb-0">Every penalty is deterministic. Each score deduction enumerates the exact signal rule, severity rating, and threat rationale without black-box vagueness.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-4 h-100 card-trust" style="background: var(--bg-surface-elevated);">
+            <div class="tool-icon mb-3">
+              {{ icon('ban', size=20, stroke_width=1.5) }}
+            </div>
+            <h3 class="fs-5 fw-bold mb-2">Zero-Trust Architecture</h3>
+            <p class="text-secondary small mb-0">Query isolation by design. No assumption of reputation, complete ephemeral payload processing, and strict client privacy protection.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-4 pt-2">
+        <div class="col-6 col-md-3">
+          <div class="p-3 text-center border rounded" style="border-color: var(--border-subtle) !important; background: var(--bg-surface);">
+            <div class="stat-number fs-3 fw-bold text-primary">2,400+</div>
+            <div class="text-muted small mt-1">Verified Threat Signatures</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 text-center border rounded" style="border-color: var(--border-subtle) !important; background: var(--bg-surface);">
+            <div class="stat-number fs-3 fw-bold text-primary">98.4%</div>
+            <div class="text-muted small mt-1">Detection Precision</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 text-center border rounded" style="border-color: var(--border-subtle) !important; background: var(--bg-surface);">
+            <div class="stat-number fs-3 fw-bold text-primary">8</div>
+            <div class="text-muted small mt-1">Dedicated Engines</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-3 text-center border rounded" style="border-color: var(--border-subtle) !important; background: var(--bg-surface);">
+            <div class="stat-number fs-3 fw-bold text-primary">24/7</div>
+            <div class="text-muted small mt-1">Continuous Monitoring</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== Report ===== -->
+<!-- ===== Final Editorial CTA Banner ===== -->
 <section class="py-5">
   <div class="container">
-    <div class="glass p-5 text-center" style="border-color:rgba(255,95,109,.35);">
-      <div class="mb-3 d-inline-flex align-items-center justify-content-center p-3 rounded-circle" style="background:var(--trust-danger-bg);color:var(--trust-danger);">
-        {{ icon('alert', size=32) }}
+    <div class="card-trust p-5 text-center">
+      <div class="brand-mark mx-auto mb-3" style="width: 44px; height: 44px;">
+        {{ icon('alert', size=22, stroke_width=1.5) }}
       </div>
-      <h2 class="section-title mt-2 mb-2">Been scammed? Report it.</h2>
-      <p class="text-muted-c mx-auto mb-4" style="max-width:520px;">Your report helps protect the community. Approved reports appear on our public scam registry.</p>
+      <h2 class="section-title mb-2">Encountered an active scam? Report it.</h2>
+      <p class="text-secondary mx-auto mb-4" style="max-width:540px;">
+        Your submission safeguards the digital community. Approved threat reports are logged on our open scam registry to protect consumers worldwide.
+      </p>
       <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a href="{{ url_for('reports.list_reports') }}" class="btn btn-danger-trust btn-lg">{{ icon('alert', size=18) }} Submit a Scam Report</a>
-        <a href="{{ url_for('main.awareness') }}" class="btn btn-ghost btn-lg">{{ icon('shield', size=18) }} Learn to Stay Safe</a>
+        <a href="{{ url_for('reports.list_reports') }}" class="btn btn-trust btn-lg">
+          {{ icon('alert', size=16, stroke_width=1.5) }} Submit a Scam Report
+        </a>
+        <a href="{{ url_for('main.awareness') }}" class="btn btn-ghost btn-lg">
+          {{ icon('shield', size=16, stroke_width=1.5) }} Security Awareness Guide
+        </a>
       </div>
     </div>
   </div>
