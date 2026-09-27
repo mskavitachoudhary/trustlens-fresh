@@ -26,13 +26,11 @@
   {% block head %}{% endblock %}
 </head>
 <body>
-  <div class="bg-subtle-grid"></div>
-
-  <nav class="navbar navbar-expand-md navbar-dark navbar-trust fixed-top">
+  <nav class="navbar navbar-expand-md navbar-trust fixed-top">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ url_for('main.index') }}">
-        <span class="brand-mark">{{ icon('brand', size=22, stroke_width=2) }}</span>
-        <span>Trust<b class="text-gradient">Lens</b></span>
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('main.index') }}">
+        <span class="brand-mark">{{ icon('brand', size=18, stroke_width=1.5) }}</span>
+        <span class="brand-title">TrustLens</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -49,7 +47,7 @@
             <ul class="dropdown-menu nav-dropdown-menu" aria-labelledby="scannersDropdown">
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.website_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.website_scanner_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('globe', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('globe', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Website Scanner</span>
                     <span class="dropdown-item-desc">Phishing &amp; Domain Checks</span>
@@ -58,7 +56,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.email_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.email_scanner_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('mail', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('mail', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Email Scanner</span>
                     <span class="dropdown-item-desc">Phishing &amp; Urgency Analysis</span>
@@ -67,7 +65,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.job_checker_page' %}active{% endif %}" href="{{ url_for('scanners.job_checker_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('briefcase', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('briefcase', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Job Checker</span>
                     <span class="dropdown-item-desc">Offer Letter &amp; Recruiter Fraud</span>
@@ -76,7 +74,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.whatsapp_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.whatsapp_scanner_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('message', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('message', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">WhatsApp Scanner</span>
                     <span class="dropdown-item-desc">Chat Screenshot OCR</span>
@@ -85,7 +83,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.qr_scanner_page' %}active{% endif %}" href="{{ url_for('scanners.qr_scanner_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('qr', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('qr', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">QR Scanner</span>
                     <span class="dropdown-item-desc">Destination &amp; Payload Safety</span>
@@ -94,7 +92,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'scanners.payment_analyzer_page' %}active{% endif %}" href="{{ url_for('scanners.payment_analyzer_page') }}">
-                  <span class="dropdown-item-icon">{{ icon('receipt', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('receipt', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Payment Analyzer</span>
                     <span class="dropdown-item-desc">Fake Screenshot &amp; UPI Validation</span>
@@ -103,7 +101,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'main.product_scanner' %}active{% endif %}" href="{{ url_for('main.product_scanner') }}">
-                  <span class="dropdown-item-icon">{{ icon('flask', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('flask', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Product Scanner</span>
                     <span class="dropdown-item-desc">Ingredient Safety &amp; Database Lookup</span>
@@ -112,7 +110,7 @@
               </li>
               <li>
                 <a class="dropdown-item {% if request.endpoint == 'main.claim_checker' %}active{% endif %}" href="{{ url_for('main.claim_checker') }}">
-                  <span class="dropdown-item-icon">{{ icon('scale', size=18) }}</span>
+                  <span class="dropdown-item-icon">{{ icon('scale', size=16, stroke_width=1.5) }}</span>
                   <div class="dropdown-item-content">
                     <span class="dropdown-item-title">Claim Checker</span>
                     <span class="dropdown-item-desc">Truth &amp; Fact Verification</span>
@@ -135,12 +133,12 @@
           </li>
         </ul>
         <div class="d-flex align-items-center gap-2 nav-auth">
-          <button class="btn btn-ghost btn-icon-theme theme-toggle-btn" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+          <button class="theme-toggle-btn" id="themeToggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
             <span class="theme-icon-sun">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              {{ icon('sun', size=16, stroke_width=1.5) }}
             </span>
             <span class="theme-icon-moon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              {{ icon('moon', size=16, stroke_width=1.5) }}
             </span>
           </button>
           {% if current_user.is_authenticated %}
@@ -164,7 +162,7 @@
         {% for category, message in messages %}
           <div class="alert alert-trust alert-{{ category }} d-flex justify-content-between align-items-center" role="alert">
             <span>{{ message }}</span>
-            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close ms-2" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         {% endfor %}
       </div>
@@ -176,26 +174,32 @@
   <footer class="footer-trust">
     <div class="container">
       <div class="row g-4 align-items-start">
-        <div class="col-md-5">
-          <div class="d-flex align-items-center gap-2 fw-bold fs-5 mb-2">
-            <span class="brand-mark">{{ icon('brand', size=22, stroke_width=2) }}</span>
-            <span>Trust<b class="text-gradient">Lens</b></span>
+        <div class="col-lg-4 col-md-5">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="brand-mark">{{ icon('brand', size=18, stroke_width=1.5) }}</span>
+            <span class="brand-title">TrustLens</span>
           </div>
-          <p class="text-dim-c mb-0 small">AI based information verification system. Verify before you trust &mdash; stay one step ahead of online scams.</p>
+          <p class="text-secondary small mb-3" style="max-width: 320px; line-height: 1.55;">
+            Institutional-grade automated verification and fraud defense platform. Inspect URLs, communications, documents, and transactions with cryptographic and heuristic rigor.
+          </p>
+          <div class="system-status-indicator d-inline-flex align-items-center gap-2 px-2 py-1 rounded" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle);">
+            <span class="status-indicator-dot"></span>
+            <span class="text-secondary" style="font-size: 0.75rem; font-weight: 500;">All verification systems operational</span>
+          </div>
         </div>
-        <div class="col-md-4">
-          <div class="fw-bold small text-uppercase text-dim-c mb-2">Tools</div>
+        <div class="col-lg-5 col-md-4">
+          <div class="footer-heading mb-2">Verification Engines</div>
           <div class="row g-2 small">
-            <div class="col-6">
-              <ul class="list-unstyled mb-0 d-flex flex-column gap-1">
+            <div class="col-sm-6">
+              <ul class="list-unstyled mb-0 d-flex flex-column gap-1 footer-links">
                 <li><a href="{{ url_for('scanners.website_scanner_page') }}">Website Scanner</a></li>
                 <li><a href="{{ url_for('scanners.email_scanner_page') }}">Email Scanner</a></li>
                 <li><a href="{{ url_for('scanners.job_checker_page') }}">Job Checker</a></li>
                 <li><a href="{{ url_for('scanners.whatsapp_scanner_page') }}">WhatsApp Scanner</a></li>
               </ul>
             </div>
-            <div class="col-6">
-              <ul class="list-unstyled mb-0 d-flex flex-column gap-1">
+            <div class="col-sm-6">
+              <ul class="list-unstyled mb-0 d-flex flex-column gap-1 footer-links">
                 <li><a href="{{ url_for('scanners.qr_scanner_page') }}">QR Scanner</a></li>
                 <li><a href="{{ url_for('scanners.payment_analyzer_page') }}">Payment Analyzer</a></li>
                 <li><a href="{{ url_for('main.product_scanner') }}">Product Scanner</a></li>
@@ -204,20 +208,19 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3">
-          <div class="fw-bold small text-uppercase text-dim-c mb-2">Company</div>
-          <ul class="list-unstyled small d-flex flex-column gap-1">
-            <li><a href="{{ url_for('main.about') }}">About</a></li>
+        <div class="col-lg-3 col-md-3">
+          <div class="footer-heading mb-2">Platform</div>
+          <ul class="list-unstyled small d-flex flex-column gap-1 footer-links">
+            <li><a href="{{ url_for('reports.list_reports') }}">Scam Reports</a></li>
             <li><a href="{{ url_for('main.awareness') }}">Cyber Awareness</a></li>
-            <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
-            <li><a href="{{ url_for('reports.list_reports') }}">Report a Scam</a></li>
+            <li><a href="{{ url_for('main.about') }}">About Platform</a></li>
+            <li><a href="{{ url_for('main.contact') }}">Contact Security</a></li>
           </ul>
         </div>
       </div>
-      <hr class="border-secondary my-4" style="border-color: var(--border-soft) !important;">
-      <div class="d-flex flex-wrap justify-content-between gap-2 small text-dim-c">
-        <span>&copy; 2026 TrustLens. All rights reserved.</span>
-        <span>Built to keep you safe online &#128276;</span>
+      <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span>&copy; 2026 TrustLens Inc. All rights reserved.</span>
+        <span class="text-muted">Strict privacy &bull; No persistent scan storage</span>
       </div>
     </div>
   </footer>
