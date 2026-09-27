@@ -117,7 +117,7 @@
         '<span class="text-danger flex-shrink-0" style="margin-top:2px;">' +
         '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
         '</span>' +
-        '<div><h5 class="mb-1" style="color:var(--trust-danger)">Scan error</h5>' +
+        '<div><h5 class="mb-1" style="color:var(--signal-danger)">Scan error</h5>' +
         '<p class="text-muted-c mb-0">' + escapeHtml(message) + "</p></div></div>";
       box.scrollIntoView({ behavior: "smooth", block: "nearest" });
     },
@@ -149,10 +149,10 @@
       ring.className = "gauge-ring";
       const color =
         numScore >= 70
-          ? "var(--trust-safe)"
+          ? "var(--signal-safe)"
           : numScore >= 45
-          ? "var(--trust-warning)"
-          : "var(--trust-danger)";
+          ? "var(--signal-warning)"
+          : "var(--signal-danger)";
       ring.style.setProperty("--ring-color", color);
       ring.style.setProperty("--value", numScore);
       ring.style.background =
@@ -174,7 +174,7 @@
     },
 
     /* Risk gauge for the email scanner - higher score = MORE dangerous.
-       Colour semantics are the inverse of the trust gauge above. */
+       Colour semantics: score <= 30 safe, 31-69 warning, >= 70 dangerous. */
     renderRiskGauge: function (container, score, label) {
       if (!container) return;
       const numScore = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
@@ -182,10 +182,10 @@
       ring.className = "gauge-ring gauge-risk";
       const color =
         numScore >= 70
-          ? "var(--trust-danger)"
-          : numScore >= 45
-          ? "var(--trust-warning)"
-          : "var(--trust-safe)";
+          ? "var(--signal-danger)"
+          : numScore > 30
+          ? "var(--signal-warning)"
+          : "var(--signal-safe)";
       ring.style.setProperty("--ring-color", color);
       ring.style.setProperty("--value", numScore);
       ring.style.background =
@@ -202,7 +202,7 @@
         numScore +
         "</div>" +
         '<div class="gauge-label">' +
-        (label || "RISK SCORE") +
+        escapeHtml(label || "RISK SCORE") +
         "</div></div>";
       container.innerHTML = "";
       container.appendChild(ring);
