@@ -591,18 +591,28 @@ h1 {
   border-radius: var(--radius-sm);
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.5;
 }
 
 .btn-trust:hover,
-.btn-trust:focus,
-.btn-primary:hover,
-.btn-primary:focus {
+.btn-primary:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
   color: var(--accent-contrast);
   transform: none;
   box-shadow: none;
   filter: none;
+}
+
+.btn-trust:focus-visible,
+.btn-primary:focus-visible {
+  outline: none;
+  border-color: var(--accent-hover);
+  box-shadow: 0 0 0 3px var(--accent-focus);
 }
 
 .btn-trust:disabled,
@@ -621,13 +631,24 @@ h1 {
   padding: 0.55rem 1.25rem;
   border-radius: var(--radius-sm);
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.5;
 }
 
 .btn-ghost:hover,
 .btn-outline:hover {
   color: var(--text-primary);
-  border-color: var(--border-strong);
+  border-color: var(--accent);
   background: var(--bg-surface-elevated);
+}
+
+.btn-ghost:focus-visible,
+.btn-outline:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-focus);
 }
 
 .btn-danger-trust {
@@ -656,26 +677,77 @@ h1 {
 }
 
 /* ---- Forms -------------------------------------------------------------- */
-.form-control-trust, .form-select-trust, textarea.form-control-trust {
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
+.form-control-trust,
+.form-control.form-control-trust,
+.form-select-trust,
+.form-select.form-select-trust,
+textarea.form-control-trust {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.form-control-trust::placeholder { color: var(--text-dim); }
-
-.form-control-trust:focus, .form-select-trust:focus {
-  background: var(--bg-input);
-  border-color: var(--accent-primary);
-  color: var(--text-main);
-  box-shadow: 0 0 0 0.25rem var(--accent-focus);
+.form-control-trust::placeholder,
+.form-control.form-control-trust::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
 }
 
-.form-select-trust option { background: var(--bg-surface); color: var(--text-main); }
+.form-control-trust:hover:not(:focus),
+.form-control.form-control-trust:hover:not(:focus),
+.form-select-trust:hover:not(:focus),
+.form-select.form-select-trust:hover:not(:focus) {
+  border-color: var(--border-strong);
+}
 
-.form-label-c { font-weight: 600; color: var(--text-muted); font-size: 0.88rem; letter-spacing: 0.02em; }
+.form-control-trust:focus,
+.form-control.form-control-trust:focus,
+.form-select-trust:focus,
+.form-select.form-select-trust:focus {
+  background-color: var(--bg-input);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 3px var(--accent-focus);
+  outline: none;
+}
+
+.form-control-trust:disabled,
+.form-control.form-control-trust:disabled,
+.form-select-trust:disabled,
+.form-select.form-select-trust:disabled {
+  background-color: var(--bg-surface-elevated);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.form-select-trust option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.form-label-c {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+  display: inline-block;
+}
+
+.form-text,
+.form-text.text-dim-c {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 0.4rem;
+}
 
 /* ---- Hero --------------------------------------------------------------- */
 .hero {
@@ -823,42 +895,95 @@ h1 {
   color: var(--text-primary);
 }
 
-/* ---- Scanner pages ------------------------------------------------------ */
+/* ---- Scanner pages & Drop Zones ----------------------------------------- */
 .scanner-shell { padding: 7.5rem 0 4rem; }
 
 .drop-zone {
-  border: 2px dashed var(--border-color);
-  border-radius: var(--radius-sm);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-md);
   background: var(--bg-surface-elevated);
-  padding: 2.5rem 1.5rem;
+  padding: 2.25rem 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.drop-zone:hover, .drop-zone.dragover {
-  border-color: var(--accent-primary);
-  background: var(--accent-focus);
+.drop-zone:hover,
+.drop-zone.dragover {
+  border-color: var(--accent);
+  background: var(--bg-surface);
+}
+
+.drop-zone:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-focus);
 }
 
 .drop-zone .dz-icon {
-  font-size: 2.2rem;
-  color: var(--accent-primary);
-  display: flex;
+  font-size: 2rem;
+  color: var(--text-secondary);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.6rem;
+  transition: color 0.15s ease;
+}
+
+.drop-zone:hover .dz-icon,
+.drop-zone.dragover .dz-icon {
+  color: var(--text-primary);
+}
+
+.drop-zone p {
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
 }
 
 .drop-zone .dz-text {
   color: var(--text-secondary);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
-.drop-zone .dz-filename {
-  color: var(--accent-primary);
+.drop-zone .dz-filename,
+.drop-zone .kbd-chip.dz-filename {
+  display: inline-block;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-xs);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  margin-top: 0.5rem;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: border-color 0.15s ease;
+}
+
+.drop-zone.has-file {
+  border-style: solid;
+  border-color: var(--border-strong);
+  background: var(--bg-surface);
+}
+
+.drop-zone.has-file .dz-filename,
+.drop-zone.has-file .kbd-chip.dz-filename {
+  border-color: var(--border-strong);
   font-weight: 600;
-  font-size: 0.85rem;
+}
+
+.drop-zone .dz-filename:empty {
+  display: none;
 }
 
 /* ---- Result panel ------------------------------------------------------- */
@@ -1284,7 +1409,7 @@ h1 {
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
 
-/* ---- Spinner overlay ---------------------------------------------------- */
+/* ---- Spinner & Loading States ------------------------------------------- */
 .scan-overlay {
   position: relative;
 }
@@ -1292,17 +1417,34 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  color: var(--accent-2);
-  font-weight: 600;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 .spin-orb {
-  width: 18px; height: 18px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  border: 2px solid rgba(56, 214, 255, 0.25);
-  border-top-color: var(--accent-2);
-  animation: spin 0.8s linear infinite;
+  border: 2px solid rgba(125, 125, 125, 0.25);
+  border-top-color: currentColor;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+.btn-trust .spin-orb,
+.btn-primary .spin-orb {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+}
+[data-theme="dark"] .btn-trust .spin-orb,
+[data-theme="dark"] .btn-primary .spin-orb {
+  border-color: rgba(0, 0, 0, 0.25);
+  border-top-color: currentColor;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 /* ---- Footer ------------------------------------------------------------- */
 .footer-trust {

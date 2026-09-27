@@ -123,30 +123,51 @@
     },
 
     loading: function (btn, text) {
+      if (!btn) return;
       btn.disabled = true;
       const original = btn.dataset.original || btn.innerHTML;
       btn.dataset.original = original;
       btn.innerHTML =
-        '<span class="spin-orb"></span> ' + (text || "Scanning...");
+        '<span class="spin-orb" aria-hidden="true"></span> <span>' + escapeHtml(text || "Scanning...") + '</span>';
       return btn;
     },
 
     doneLoading: function (btn) {
+      if (!btn) return;
       btn.disabled = false;
-      if (btn.dataset.original) btn.innerHTML = btn.dataset.original;
+      if (btn.dataset.original) {
+        btn.innerHTML = btn.dataset.original;
+        delete btn.dataset.original;
+      }
     },
 
     /* Build a circular trust gauge. score 0-100 */
     renderGauge: function (container, score) {
+      if (!container) return;
+      const numScore = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
       const ring = document.createElement("div");
       ring.className = "gauge-ring";
       const color =
-        score >= 70 ? "var(--green)" : score >= 45 ? "var(--yellow)" : "var(--red)";
+        numScore >= 70
+          ? "var(--trust-safe)"
+          : numScore >= 45
+          ? "var(--trust-warning)"
+          : "var(--trust-danger)";
       ring.style.setProperty("--ring-color", color);
-      ring.style.setProperty("--value", score);
+      ring.style.setProperty("--value", numScore);
+      ring.style.background =
+        "conic-gradient(" +
+        color +
+        " 0% " +
+        numScore +
+        "%, var(--gauge-track) " +
+        numScore +
+        "% 100%)";
       ring.innerHTML =
         '<div class="gauge-inner">' +
-        '<div class="gauge-num">' + score + '</div>' +
+        '<div class="gauge-num">' +
+        numScore +
+        "</div>" +
         '<div class="gauge-label">TRUST SCORE</div></div>';
       container.innerHTML = "";
       container.appendChild(ring);
@@ -155,16 +176,34 @@
     /* Risk gauge for the email scanner - higher score = MORE dangerous.
        Colour semantics are the inverse of the trust gauge above. */
     renderRiskGauge: function (container, score, label) {
+      if (!container) return;
+      const numScore = Math.max(0, Math.min(100, Math.round(Number(score) || 0)));
       const ring = document.createElement("div");
       ring.className = "gauge-ring gauge-risk";
       const color =
-        score >= 70 ? "var(--red)" : score >= 45 ? "var(--yellow)" : "var(--green)";
+        numScore >= 70
+          ? "var(--trust-danger)"
+          : numScore >= 45
+          ? "var(--trust-warning)"
+          : "var(--trust-safe)";
       ring.style.setProperty("--ring-color", color);
-      ring.style.setProperty("--value", score);
+      ring.style.setProperty("--value", numScore);
+      ring.style.background =
+        "conic-gradient(" +
+        color +
+        " 0% " +
+        numScore +
+        "%, var(--gauge-track) " +
+        numScore +
+        "% 100%)";
       ring.innerHTML =
         '<div class="gauge-inner">' +
-        '<div class="gauge-num">' + score + '</div>' +
-        '<div class="gauge-label">' + (label || "RISK SCORE") + '</div></div>';
+        '<div class="gauge-num">' +
+        numScore +
+        "</div>" +
+        '<div class="gauge-label">' +
+        (label || "RISK SCORE") +
+        "</div></div>";
       container.innerHTML = "";
       container.appendChild(ring);
     },
@@ -251,9 +290,10 @@
   document.querySelectorAll(".drop-zone").forEach(function (zone) {
     const input = zone.querySelector('input[type="file"]');
     const label = zone.querySelector(".dz-filename");
+    const initialText = label ? label.textContent.trim() : "";
 
     function formatFileLabel(files) {
-      if (!files || !files.length) return "No file chosen";
+      if (!files || !files.length) return initialText || "No file chosen";
       if (files.length === 1) {
         const f = files[0];
         const sizeStr = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + " MB" : (f.size / 1024).toFixed(0) + " KB";
@@ -263,25 +303,65 @@
     }
 
     if (input) {
+      if (!zone.getAttribute("role")) zone.setAttribute("role", "button");
+      if (!zone.getAttribute("tabindex")) zone.setAttribute("tabindex", "0");
+
+      zone.addEventListener("keydown", function (e) {
+        if ((e.key === "Enter" || e.key === " ") && e.target === zone) {
+          e.preventDefault();
+          input.click();
+        }
+      });
+
       zone.addEventListener("click", function (e) {
         if (e.target !== input) input.click();
       });
+
       zone.addEventListener("dragover", function (e) {
         e.preventDefault();
+        e.stopPropagation();
         zone.classList.add("dragover");
       });
-      zone.addEventListener("dragleave", function () { zone.classList.remove("dragover"); });
-      zone.addEventListener("drop", function (e) {
+
+      zone.addEventListener("dragleave", function (e) {
         e.preventDefault();
-        zone.classList.remove("dragover");
-        if (e.dataTransfer.files.length) {
-          input.files = e.dataTransfer.files;
-          if (label) label.textContent = formatFileLabel(e.dataTransfer.files);
+        e.stopPropagation();
+        if (!zone.contains(e.relatedTarget)) {
+          zone.classList.remove("dragover");
         }
       });
-      input.addEventListener("change", function () {
-        if (label && input.files.length) label.textContent = formatFileLabel(input.files);
+
+      zone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        zone.classList.remove("dragover");
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+          input.files = e.dataTransfer.files;
+          if (label) label.textContent = formatFileLabel(e.dataTransfer.files);
+          zone.classList.add("has-file");
+          input.dispatchEvent(new Event("change", { bubbles: true }));
+        }
       });
+
+      input.addEventListener("change", function () {
+        if (input.files && input.files.length) {
+          zone.classList.add("has-file");
+          if (label) label.textContent = formatFileLabel(input.files);
+        } else {
+          zone.classList.remove("has-file");
+          if (label) label.textContent = initialText || "No file chosen";
+        }
+      });
+
+      const form = zone.closest("form");
+      if (form) {
+        form.addEventListener("reset", function () {
+          setTimeout(function () {
+            zone.classList.remove("has-file");
+            if (label) label.textContent = initialText || (label.classList.contains("kbd-chip") ? "No file chosen" : "");
+          }, 10);
+        });
+      }
     }
   });
 
