@@ -10,8 +10,11 @@
   <title>{% block title %}TrustLens - AI Based Information Verification{% endblock %}</title>
   <script>
     (function() {
+      const urlTheme = new URLSearchParams(window.location.search).get("theme");
       const saved = localStorage.getItem("trustlens-theme");
-      if (saved === "light" || saved === "dark") {
+      if (urlTheme === "light" || urlTheme === "dark") {
+        document.documentElement.setAttribute("data-theme", urlTheme);
+      } else if (saved === "light" || saved === "dark") {
         document.documentElement.setAttribute("data-theme", saved);
       } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) {
         document.documentElement.setAttribute("data-theme", "light");
