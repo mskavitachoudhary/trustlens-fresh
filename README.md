@@ -1,130 +1,174 @@
 # TrustLens – AI Based Information Verification System
 
-TrustLens is a production-grade web application that verifies online content
-before you trust it. Users can scan websites, emails, job offers, WhatsApp
-messages, QR codes and payment screenshots for scam indicators. Every scan
-produces an explainable 0–100 trust score backed by real analysis — never a
-fixed or random value. Community scam reports, a user dashboard, an admin
-panel with analytics charts, and admin email alerts round out the platform.
+TrustLens is a production-grade multi-vector information verification web application designed to detect scams, fraud, counterfeit products, and misinformation. Users can analyze websites, emails, job offers, WhatsApp chat screenshots, QR codes, payment receipts, product ingredient labels, and factual claims. Every scan produces an explainable **0–100 trust score** backed by transparent heuristic checks.
 
 ---
 
-## Project Overview
+## Quick Navigation
 
-- **Backend:** Python / Flask, SQLAlchemy, SQLite (MySQL optional)
-- **Frontend:** HTML5, CSS3, Bootstrap 5, vanilla JavaScript (Chart.js for admin charts)
-- **AI / Analysis:** OCR (EasyOCR), OpenCV, Pillow, NumPy, heuristic scoring engine
-- **Security:** Flask-Login sessions, Werkzeug password hashing, file-type/size
-  validation, admin-only routes, rate-friendly timeouts, input validation
-
-### Scanner modules
-
-| Module | What it checks |
-| --- | --- |
-| Website Scanner | HTTPS, SSL, suspicious keywords/TLDs, raw-IP hosts, redirects, local blacklist |
-| Email Scanner | Suspicious links, phishing phrases, urgency, sender cues, payment requests, typos |
-| Job / Internship Checker | Upfront fees, free-mail HR domains, unrealistic salary, vague titles, domain mismatch |
-| WhatsApp Scanner | OCR-extracted messages classified into lottery/OTP/KYC/courier/job/investment scams |
-| QR Scanner | Decodes QR payloads and scores where they lead (URLs run through the website engine) |
-| Payment Analyzer | EXIF/metadata, image statistics, OCR keyword checks to catch fake UPI/bank screenshots |
-
-Every verdict includes an **AI explanation panel**: a list of reasons with
-severity (safe / warning / danger) explaining exactly why the score was
-assigned.
+- [How to Run Step by Step](#how-to-run-step-by-step)
+- [macOS Port Conflict Notice (Important)](#macos-port-conflict-notice-important)
+- [All 8 Verification Engines](#all-8-verification-engines)
+- [Default Admin Credentials](#default-admin-credentials)
+- [Platform Features](#platform-features)
+- [Project Documentation](#project-documentation)
+- [Project Structure](#project-structure)
 
 ---
 
-## Features
+## How to Run Step by Step
 
-- 6 explainable AI scanners (website, email, job, WhatsApp, QR, payment)
-- Community **scam report portal** with admin approval workflow
-- **Admin email alerts** for scam reports and contact messages (Flask-Mail)
-- **Blacklist engine** — admins add domains; matching scans display a prominent
-  "BLACKLISTED / UNSAFE" banner
-- User **dashboard** with platform statistics
-- **Admin panel** — users, reports, blacklist, feedback, AI logs, messages
-- **Analytics** — Chart.js charts for scan volume, risk distribution, user
-  growth and a "Most Common Fraud Types" ranked breakdown
-- Authentication (register / login / logout) with hashed passwords
-- Responsive dark glassmorphism UI
-- 404 / 500 error pages
+Follow these steps to set up and run TrustLens locally on your system:
 
----
+### Step 1: Clone or Open the Repository
 
-## Requirements
-
-- Python 3.10+
-- pip
-
-Core dependencies (see `requirements.txt`):
-
-```
-Flask, Flask-SQLAlchemy, Flask-Login, Flask-Mail
-Werkzeug, python-dotenv
-PyMySQL, cryptography
-Pillow, opencv-python-headless, easyocr, numpy
-pyzbar, qrcode
-requests, validators
-python-multipart
-```
-
-> EasyOCR downloads a model on first use. pyzbar requires the native `zbar`
-> library on some systems; the QR scanner falls back to OpenCV automatically.
-
----
-
-## Installation
+Open your terminal or command prompt and navigate to the project directory:
 
 ```bash
-# 1. (Recommended) create a virtual environment
-python -m venv venv
-venv\Scripts\activate          # Windows
-source venv/bin/activate       # macOS / Linux
+cd /path/to/trustlens-fresh
+```
 
-# 2. Install dependencies
+### Step 2: Create a Virtual Environment
+
+It is recommended to use an isolated Python virtual environment:
+
+**On macOS / Linux:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+**On Windows:**
+```cmd
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### Step 3: Install Required Dependencies
+
+Ensure you have Python 3.10+ installed, then install all project requirements:
+
+```bash
 pip install -r requirements.txt
-
-# 3. (Optional) configure environment
-#    Copy .env.example to .env and fill in values.
-#    Minimum required to enable email alerts:
-#      MAIL_USERNAME=your-gmail@example.com
-#      MAIL_PASSWORD=your-app-password
 ```
 
-## How to Run
+> **Note on OCR Models:** On first use of image-based scanners (WhatsApp, Payment, Product), `EasyOCR` will automatically download lightweight OCR model weights (~80MB).
+
+### Step 4: Configure Environment Variables
+
+Create your local `.env` configuration from the provided template:
 
 ```bash
-python app.py
+cp .env.example .env
 ```
 
-Then open <http://localhost:5000>.
+The application runs immediately with zero-config **SQLite** defaults. You can adjust settings in `.env` if desired:
+- `SECRET_KEY`: Random secret key for session security.
+- `USE_MYSQL`: Set to `0` for SQLite (default) or `1` for MySQL.
+- `ADMIN_EMAIL`: Default administrator email (`gunjbazaz143@gmail.com`).
+- `ADMIN_PASSWORD`: Default administrator password (`Admin@12345`).
+- `MAIL_USERNAME` / `MAIL_PASSWORD`: Optional SMTP credentials for email alerts.
 
-The database, schema and bootstrap admin account are created automatically on
-first boot:
+### Step 5: Start the Development Server
 
-- Admin login: **admin@trustlens.io**
-- Admin password: **Admin@12345**
+#### On macOS (Recommended: Port 5001)
 
-> Change the admin password immediately in production, and always set a
-> strong `SECRET_KEY` via environment variable.
+```bash
+PORT=5001 python run.py
+```
+
+#### On Windows / Linux (Port 5000)
+
+```bash
+python run.py
+```
+
+Alternatively, you can launch via:
+```bash
+PORT=5001 python app.py
+```
+
+### Step 6: Access the Application
+
+Open your browser and navigate to:
+- **Local Application URL:** [http://127.0.0.1:5001](http://127.0.0.1:5001) (or [http://127.0.0.1:5000](http://127.0.0.1:5000))
+- **Admin Portal:** [http://127.0.0.1:5001/admin](http://127.0.0.1:5001/admin)
+
+The database, schema tables, and product knowledge base (142 ingredients and 27 product records) are created automatically on first boot.
 
 ---
 
-## Email Alerts
+## macOS Port Conflict Notice (Important)
 
-Configured via environment variables (or `.env`):
+> [!WARNING]
+> On macOS (Monterey, Ventura, Sonoma, Sequoia), the system **AirPlay Receiver** service listens on port `5000` by default (`ControlCenter`). Attempting to run Flask on port `5000` will return `403 Forbidden` or `Port 5000 not allowed for HTTP`.
+> 
+> **Always use `PORT=5001 python run.py` when running on macOS.**
 
-| Variable | Purpose |
-| --- | --- |
-| `MAIL_ALERT_RECIPIENT` | Where scam reports / contact messages are delivered (default: `gunjbazaz143@gmail.com`) |
-| `MAIL_SERVER` | SMTP server (default `smtp.gmail.com`) |
-| `MAIL_PORT` | SMTP port (default `587`) |
-| `MAIL_USERNAME` | SMTP username (e.g. your Gmail) |
-| `MAIL_PASSWORD` | SMTP app password |
-| `MAIL_DEFAULT_SENDER` | From header |
+---
 
-If SMTP is not configured the application still works; messages are saved to
-the database and a friendly notice is shown instead of a crash.
+## Default Admin Credentials
+
+On initial boot, TrustLens provisions the bootstrap administrator:
+
+- **Email:** `gunjbazaz143@gmail.com` (fallback: `admin@trustlens.io`)
+- **Password:** `Admin@12345`
+- **Admin Route:** `/admin`
+
+---
+
+## All 8 Verification Engines
+
+TrustLens features eight specialized verification engines accessible via the unified navigation menu:
+
+| # | Engine | Route | Core Verification Checks |
+| :-: | :--- | :--- | :--- |
+| **1** | **Website Scanner** | `/website-scanner` | 31 checks: SSL/TLS, domain age, suspicious TLDs, raw-IP hosts, phishing keywords, and admin blacklist. |
+| **2** | **Email Scanner** | `/email-scanner` | Sender domain mismatch, phishing urgency patterns, malicious links, free-mail address cues. |
+| **3** | **Job Checker** | `/job-checker` | Advance fee detection, interview via unofficial chat apps, unrealistic compensation, vague company domains. |
+| **4** | **WhatsApp Scanner** | `/whatsapp-scanner` | EasyOCR analysis of chat screenshots categorized into lottery, OTP/KYC, customs courier, and crypto scams. |
+| **5** | **QR Scanner** | `/qr-scanner` | Multi-engine decoding (`zxing-cpp`, `pyzbar`, `opencv`), URL threat extraction, payment command analysis. |
+| **6** | **Payment Analyzer** | `/payment-analyzer` | Forensics on UPI screenshots (GPay, PhonePe, Paytm), UTR transaction format verification, and font tampering detection. |
+| **7** | **Product Scanner** | `/product-scanner` | Label ingredient OCR extraction matched against reference toxicological database (142+ chemicals, 27+ product profiles). |
+| **8** | **Claim Checker** | `/claim-checker` | Fact-checking engine verifying claims and viral rumors against authoritative reference patterns. |
+
+---
+
+## Platform Features
+
+- **Institutional Editorial UI**: Clean, high-trust design system inspired by Linear, Stripe Press, and Vercel.
+- **Native Dual-Theming**: Instant anti-FOUC theme switching between Light (`#fbfbfb`/`#ffffff`) and Dark (`#09090b`/`#121215`) modes with `?theme=light` / `?theme=dark` support.
+- **Explainable Circular Score Gauges**: Strict 1:1 circular meters displaying 0–100 scores with tabular typography and clear check attribution.
+- **Community Scam Reports Portal**: Public portal (`/scam-reports`) with user submission and administrative verification workflow.
+- **Dynamic Threat Blacklist**: Real-time domain and entity blocking with immediate warning banners.
+- **Admin Analytics Dashboard**: Dynamic Chart.js charts for scan volume, risk distribution, fraud type ranking, and user growth with real-time theme adaptation.
+- **Automated Email Alerts**: Background notifications for scam reports and contact form inquiries.
+
+---
+
+## Project Documentation
+
+For deeper architectural and implementation details, consult the `docs/` directory:
+
+- [Project Guide & In-Depth Specifications](file:///Users/dineshchoudhary/Developer/kavita/trustlens-fresh/docs/GETTING_STARTED_AND_SPECIFICATIONS.md): Complete feature specifications, API contracts, database schema, and test guides.
+- [Architecture & System Overview](file:///Users/dineshchoudhary/Developer/kavita/trustlens-fresh/docs/ARCHITECTURE.md): Technical stack, MVC patterns, service pipelines, and model definitions.
+- [Design Specifications](file:///Users/dineshchoudhary/Developer/kavita/trustlens-fresh/docs/superpowers/specs/2026-09-27-institutional-editorial-redesign-design.md): Design tokens, typography hierarchy, and surface principles.
+
+---
+
+## Running Automated Tests
+
+To run the automated unit test suite:
+
+```bash
+# Ensure virtual environment is active
+source .venv/bin/activate
+
+# Run all unit tests
+python -m unittest discover tests/
+```
+
+All 20 unit tests should pass with `OK`.
 
 ---
 
@@ -132,74 +176,58 @@ the database and a friendly notice is shown instead of a crash.
 
 ```
 .
-├── app.py                 # Entry point (python app.py)
-├── app_factory.py         # Flask application factory
-├── config.py              # Centralised configuration
-├── run.py                 # Alternate entry point
-├── requirements.txt
-├── .env.example
-├── models/                # SQLAlchemy models
-│   ├── user.py            # Users + admin role
-│   ├── scan.py            # Website/Job/Email/WhatsApp/QR/Payment scans
+├── app.py                 # WSGI entry point
+├── app_factory.py         # Flask application factory (blueprints, extensions, errors)
+├── run.py                 # Development runner (respects PORT environment variable)
+├── config.py              # Centralized environment configuration
+├── requirements.txt       # Dependencies
+├── .env.example           # Environment template
+├── database/              # DB bootstrap, migrations, and seed scripts
+│   ├── init_db.py         # Schema creation and admin seeding
+│   ├── seed_product_db.py # Product ingredient knowledge base seeds
+│   └── trustlens.db       # SQLite database (auto-created)
+├── docs/                  # Detailed documentation
+│   ├── GETTING_STARTED_AND_SPECIFICATIONS.md
+│   ├── ARCHITECTURE.md
+│   └── superpowers/       # Design specs & execution plans
+├── models/                # SQLAlchemy database models
+│   ├── user.py            # User and admin accounts
+│   ├── scan.py            # Scan records
+│   ├── product_db.py      # Product ingredient knowledge base
 │   ├── report.py          # Community scam reports
-│   ├── support.py         # Contact messages + feedback
-│   └── admin.py           # Blacklist + AI audit logs
-├── routes/                # Blueprints
-│   ├── main.py            # Home, about, awareness, contact
-│   ├── auth.py            # Login / register / logout
-│   ├── scanners.py        # Scanner pages + JSON APIs
-│   ├── dashboard.py       # User dashboard + stats
-│   ├── reports.py         # Scam report portal + submit API
-│   └── admin.py           # Admin panel + analytics APIs
-├── services/              # Analysis engines & helpers
+│   └── support.py         # Support tickets and messages
+├── routes/                # Flask Blueprints
+│   ├── main.py            # Homepage, about, awareness, product/claim routes
+│   ├── auth.py            # Authentication routes (login, register, logout)
+│   ├── scanners.py        # 6 core scanner routes and JSON APIs
+│   ├── dashboard.py       # User dashboard views
+│   ├── reports.py         # Scam report portal
+│   └── admin.py           # Admin panel and analytics endpoints
+├── services/              # Heuristic scanning and forensic engines
 │   ├── website_scanner.py
 │   ├── email_scanner.py
 │   ├── job_scanner.py
 │   ├── whatsapp_scanner.py
 │   ├── qr_scanner.py
 │   ├── payment_scanner.py
-│   ├── scoring.py         # ScoreBuilder + shared heuristics
-│   ├── analytics.py       # Admin chart aggregations
-│   ├── mail.py            # Flask-Mail notifications
-│   └── logger.py          # Centralised logging / AI audit
-├── database/              # SQLite DB + bootstrap
-├── templates/             # Jinja2 templates (base, scanners/, admin/, auth/)
-├── static/
-│   ├── css/style.css
-│   ├── js/main.js
-│   ├── images/
-│   ├── icons/
-│   └── uploads/           # User uploads (subfolders per scanner)
-├── reports/               # Generated PDF reports
-├── uploads/               # Document storage
-└── instance/              # Flask instance folder
+│   ├── product_scanner.py
+│   ├── claim_scanner.py
+│   ├── scoring.py
+│   └── analytics.py
+├── static/                # Static assets (CSS, JS, images, icons)
+│   ├── css/style.css      # Editorial design system stylesheet
+│   └── js/main.js         # Interactive client logic, drop zones, gauges
+├── templates/             # Jinja2 HTML templates
+│   ├── base.html          # Global shell with navigation and theme toggle
+│   ├── index.html         # Homepage showcase
+│   ├── scanners/          # Scanner interface templates
+│   ├── admin/             # Admin dashboard and analytics
+│   └── components/        # Reusable macros (icons.html)
+└── tests/                 # Automated test suites
 ```
-
----
-
-## Screenshots
-
-*(Placeholders — add screenshots here for the project report.)*
-
-| Home page | Website Scanner | Admin Dashboard |
-| --- | --- | --- |
-| `screenshots/home.png` | `screenshots/scanner.png` | `screenshots/admin.png` |
-
----
-
-## Future Improvements
-
-- News verification with live multi-source cross-checking
-- Image tampering / reverse-image analysis
-- Product ingredient scanner with OCR + safety database
-- AI-generated text probability (perplexity analysis)
-- PDF report generation and download
-- Forgot password / password reset flow
-- Google Safe Browsing + VirusTotal integration
-- Two-factor authentication
 
 ---
 
 ## License
 
-MIT License — see `LICENSE`. Free for educational and non-commercial use.
+MIT License. Free for educational, research, and non-commercial use.
