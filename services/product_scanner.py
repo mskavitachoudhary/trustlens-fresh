@@ -2628,7 +2628,9 @@ def _strip_ingredients_header(text: str) -> str:
 # Section-header cues on a product label that mark the START of the
 # ingredient list ("Ingredients:", "INGREDIENTS:", "Ingredients may include:").
 _INGREDIENT_START_RE = re.compile(
-    r"^\s*(?:ingredients?\b|ingredient\s+list|ingredients\s+may\s+include"
+    r"^\s*(?:ingredients?\b|ingr[eé]dients?\b|composition\b|active\s+ingredients?\b"
+    r"|inactive\s+ingredients?\b|key\s+ingredients?\b|each\s+.*?contains?\b"
+    r"|ingredient\s+list|ingredients\s+may\s+include"
     r"|ingredients?\s+in\s+(?:the\s+)?product|included\b|contains?\b)\s*[:\-]?\s*",
     re.IGNORECASE,
 )
@@ -2637,7 +2639,7 @@ _INGREDIENT_START_RE = re.compile(
 # one of these the ingredient section is over - everything after is nutrition
 # or labels info, NOT ingredients.
 _INGREDIENT_STOP_RE = re.compile(
-    r"^\s*(?:nutritional?\s+information|nutrition\s+(?:information|facts)"
+    r"^\s*(?:nutritional?\s+(?:information|facts)|nutrition\s+(?:information|facts)"
     r"|serving\s+size|net\s*(?:wt\.?|weight)|weight\s*[:]?"
     r"|allergen\s*advice|allergens?\b"
     r"|manufactur(?:er|ed|ing)|made\s+in|packed\s+by|marketed\s+by"
@@ -2660,8 +2662,8 @@ def _extract_ingredient_section(text: str) -> str:
 
     Strategy (line based, because OCR returns paragraph lines):
       1. Locate the start of the ingredient section - either an explicit header
-         ("Ingredients:", "INGREDIENTS:", "Ingredients may include:") or, when
-         no header exists, the first line that looks like an ingredient list.
+         ("Ingredients:", "INGREDIENTS:", "Ingredients may include:", "Composition:")
+         or, when no header exists, the first line that looks like an ingredient list.
       2. Collect lines until a stop-section header (Nutritional Information,
          Allergen Advice, Manufacturer, Best Before, MRP, FSSAI, Batch, ...).
       3. A single-line input with no label structure is returned unchanged so a
@@ -2699,18 +2701,25 @@ def _extract_ingredient_section(text: str) -> str:
         start_idx = begin
 
     collected = []
-    header_line = lines[start_idx].strip()
     for idx, ln in enumerate(lines[start_idx:], start=start_idx):
         stripped = ln.strip()
         if not stripped:
             continue
         if is_stop(stripped):
             break
-        # A bare header line ("Ingredients", "INGREDIENTS:") carries no
-        # ingredient content of its own - drop it so it never becomes a
-        # bogus ingredient. Same-line content after the colon is handled below.
-        if idx == start_idx and is_start(stripped) \
-                and not re.search(r"(?:ingredients?\b|may\s+include)\s*[:\-]\s*\S", stripped, re.IGNORECASE):
+        # On the start line, strip the header prefix and any colon/dash
+        if idx == start_idx and is_start(stripped):
+            after_header = re.sub(
+                r"^\s*(?:ingredients?\b|ingr[eé]dients?\b|composition\b|active\s+ingredients?\b"
+                r"|inactive\s+ingredients?\b|key\s+ingredients?\b|each\s+.*?contains?\b"
+                r"|ingredient\s+list|ingredients\s+may\s+include"
+                r"|ingredients?\s+in\s+(?:the\s+)?product|included\b|contains?\b)\s*[:\-]?\s*",
+                "",
+                stripped,
+                flags=re.IGNORECASE,
+            ).strip()
+            if after_header:
+                collected.append(after_header)
             continue
         collected.append(stripped)
 
@@ -2723,7 +2732,7 @@ def _extract_ingredient_section(text: str) -> str:
     # / Net Weight / MRP / FSSAI / Batch / Storage) terminates the ingredient
     # list. Cut the section at the first such header wherever it appears.
     m = re.search(
-        r"(?:nutritional?\s+information|nutrition\s+(?:information|facts)|"
+        r"(?:nutritional?\s+(?:information|facts)|nutrition\s+(?:information|facts)|"
         r"serving\s+size|net\s*(?:wt\.?|weight)|allergen\s*advice|allergens?\b|"
         r"manufactur(?:er|ed|ing)|best\s*(?:before|by)|use\s*by|expiry|"
         r"\bmrp\b|fssai\b|\bbatch\b|storage\b|vegetarian\s*symbol|"
@@ -2733,12 +2742,6 @@ def _extract_ingredient_section(text: str) -> str:
     if m:
         section = section[:m.start()].strip()
 
-    # Keep any content on the same line as an "Ingredients:" header.
-    header_line = lines[start_idx].strip()
-    m = re.search(r"(?:ingredients?\b|may\s+include)\s*[:\-]\s*(.+)$",
-                  header_line, re.IGNORECASE)
-    if m:
-        return _strip_ocr_garbage_prefix(m.group(1).strip())
     return _strip_ocr_garbage_prefix(section)
 
 
@@ -4636,11 +4639,8 @@ def scan_product(input_text: str = "", image_path: str = "", extracted_text: str
                 stripped_lines.append(cleaned)
         ingredient_section = "\n".join(stripped_lines)
     ingredients = parse_ingredients(ingredient_section) if ingredient_section else []
-
-    logger.info(
-        "PRODUCT DEBUG | raw_ocr=%r\n"
-        "PRODUCT DEBUG | cleaned_section=%r\n"
-        "PRODUCT DEBUG | parsed_ingredients=%r",
+    logger.debug(
+        "Product scan parsed: raw_ocr=%r section=%r ingredients=%r",
         combined, ingredient_section, [i["name"] for i in ingredients],
     )
 

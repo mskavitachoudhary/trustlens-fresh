@@ -89,13 +89,32 @@ def _get_reader():
 def extract_text_ocr(image_path: str) -> str:
     """
     Extract text from an image using EasyOCR.
+    Handles smartphone camera EXIF orientation and downscales oversized images.
     Returns an empty string if OCR is unavailable or times out.
     """
     try:
         reader = _get_reader()
+
+        # Preprocess with PIL to handle EXIF rotation and prevent timeouts on huge camera images
+        from PIL import Image, ImageOps
+        import numpy as np
+
+        try:
+            with Image.open(image_path) as pil_img:
+                pil_img = ImageOps.exif_transpose(pil_img)
+                max_side = max(pil_img.size)
+                if max_side > 2000:
+                    scale = 2000.0 / max_side
+                    new_size = (int(pil_img.width * scale), int(pil_img.height * scale))
+                    pil_img = pil_img.resize(new_size, Image.Resampling.LANCZOS)
+                img_input = np.array(pil_img.convert("RGB"))
+        except Exception as img_err:
+            logger.warning("Could not preprocess image with PIL (%s), falling back to file path", img_err)
+            img_input = image_path
+
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
-            future = pool.submit(reader.readtext, image_path, detail=0, paragraph=True)
+            future = pool.submit(reader.readtext, img_input, detail=0, paragraph=False)
             lines = future.result(timeout=Config.OCR_TIMEOUT_SECONDS)
             pool.shutdown(wait=False)
             return "\n".join(str(line).strip() for line in lines if str(line).strip())
