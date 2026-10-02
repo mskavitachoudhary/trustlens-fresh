@@ -5,7 +5,7 @@ Application factory. Wires configuration, extensions, blueprints and error handl
 
 import logging
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 
@@ -50,9 +50,16 @@ def create_app(config_class=Config) -> Flask:
     # ---- Blueprints ----
     register_blueprints(app)
 
+    # ---- Vercel Serverless Fallback Routes ----
+    @app.route("/api/index.py")
+    @app.route("/api/index")
+    def vercel_entrypoint_fallback():
+        return redirect(url_for("main.index"))
+
     # ---- Error handlers ----
     @app.errorhandler(404)
     def not_found(_error):
+        app.logger.warning("404 Not Found: %s", request.path)
         return render_template("404.html"), 404
 
     @app.errorhandler(500)
