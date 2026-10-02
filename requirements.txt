@@ -12,10 +12,9 @@ cryptography>=41.0.0
 # ---- Configuration / env ----
 python-dotenv>=1.0.0
 
-# ---- Image & OCR ----
+# ---- Image & Computer Vision ----
 Pillow>=10.1.0
 opencv-python-headless>=4.9.0
-easyocr>=1.7.1
 numpy>=1.26.0
 
 # ---- QR decoding ----

@@ -27,7 +27,10 @@ class Config:
     elif os.environ.get("USE_MYSQL", "").lower() in {"1", "true", "yes"}:
         SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
     else:
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{Path(__file__).resolve().parent / 'database' / 'trustlens.db'}"
+        if os.environ.get("VERCEL"):
+            SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/trustlens.db"
+        else:
+            SQLALCHEMY_DATABASE_URI = f"sqlite:///{Path(__file__).resolve().parent / 'database' / 'trustlens.db'}"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True, "pool_recycle": 280}
@@ -41,7 +44,10 @@ class Config:
 
     # ---- Uploads ----
     BASE_DIR = Path(__file__).resolve().parent
-    UPLOAD_FOLDER = str(BASE_DIR / "static" / "uploads")
+    if os.environ.get("VERCEL"):
+        UPLOAD_FOLDER = "/tmp/uploads"
+    else:
+        UPLOAD_FOLDER = str(BASE_DIR / "static" / "uploads")
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
     ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "bmp"}
 

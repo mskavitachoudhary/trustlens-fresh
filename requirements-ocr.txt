@@ -1,0 +1,3 @@
+# Optional dependencies for local heavy OCR (EasyOCR / PyTorch)
+# Note: Do NOT install on Vercel as PyTorch exceeds the 500 MB function limit.
+easyocr>=1.7.1
