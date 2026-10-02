@@ -58,3 +58,9 @@ def product_scanner():
 @main_bp.route('/claim-checker', methods=['GET', 'POST'])
 def claim_checker():
     return render_template('claim_scanner.html')
+
+
+@main_bp.route('/scanners')
+@main_bp.route('/scanners/')
+def scanners():
+    return redirect(url_for('main.index', _anchor='scanners'))
